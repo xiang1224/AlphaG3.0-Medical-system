@@ -5,437 +5,483 @@
     <meta charset="UTF-8">
     <title>醫療管理系統 — 輸入平台</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        /* 基礎全域設定 */
+<style>
+    /* 基礎全域設定 */
+    html,
+    body {
+        background-color: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        font-family: "Helvetica Neue", Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+        color: #333;
+        font-size: 13px;
+        line-height: 1.4;
+        height: auto;
+        min-height: 100%;
+    }
+
+    body {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    /* 頂部功能與分頁列 */
+    .system-header {
+        max-width: 210mm;
+        margin: 0 auto 15px auto;
+        background: #1e293b;
+        padding: 10px 20px;
+        border-radius: 6px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-sizing: border-box;
+    }
+
+    .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tab-group {
+        display: flex;
+        gap: 5px;
+        background: #0f172a;
+        padding: 4px;
+        border-radius: 6px;
+    }
+
+    .tab-btn {
+        background: transparent;
+        color: #94a3b8;
+        border: none;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-pdf {
+        background-color: #2563eb;
+    }
+
+    .btn-pdf:hover {
+        background-color: #1d4ed8;
+    }
+
+    .btn-jpg {
+        background-color: #059669;
+    }
+
+    .btn-jpg:hover {
+        background-color: #047857;
+    }
+
+    .btn-clear {
+        background-color: #ef4444;
+    }
+
+    .btn-clear:hover {
+        background-color: #dc2626;
+    }
+
+    .form-panel {
+        display: none;
+    }
+
+    .form-panel.active {
+        display: block;
+    }
+
+    /* A4 紙張基本外框 */
+    .page-container {
+        width: 210mm;
+        min-height: 297mm;
+        height: auto !important;
+        margin: 0 auto;
+        padding: 25px 30px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 20px;
+        margin: 5px 0 15px 0;
+        color: #1a365d;
+        letter-spacing: 1px;
+    }
+
+    .doc-sub {
+        text-align: center;
+        font-size: 12px;
+        color: #64748b;
+        margin-top: -10px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+        table-layout: fixed;
+    }
+
+    th,
+    td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 10px;
+        vertical-align: middle;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    th {
+        background-color: #1e3a8a;
+        color: white;
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+    .section-title {
+        background-color: #e2e8f0;
+        font-weight: bold;
+        color: #1e3a8a;
+        font-size: 13.5px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        background-color: #f8fafc;
+        padding: 5px 6px;
+        box-sizing: border-box;
+        font-size: 13px;
+        font-family: inherit;
+        border-radius: 3px;
+    }
+
+    select {
+        text-align: center;
+        text-align-last: center;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    select.val-H {
+        color: #dc2626;
+        background-color: #fef2f2;
+    }
+
+    select.val-L {
+        color: #2563eb;
+        background-color: #eff6ff;
+    }
+
+    select.val-N {
+        color: #333;
+        background-color: #f8fafc;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .note-box {
+        font-size: 11px;
+        color: #475569;
+        background-color: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 70px;
+        border: 1px solid #cbd5e1;
+        background-color: #f8fafc;
+        padding: 6px;
+        box-sizing: border-box;
+        font-size: 13px;
+        font-family: inherit;
+        resize: none;
+        border-radius: 3px;
+    }
+
+    .tall-textarea {
+        height: 160px;
+    }
+
+    /* 👑 Word 樣式文字控制工具列 */
+    .editor-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 5px;
+        background-color: #f8fafc;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #cbd5e1;
+    }
+
+    .tool-btn {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 4px 9px;
+        font-size: 11px;
+        font-weight: bold;
+        color: #475569;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .tool-btn:hover {
+        background-color: #e2e8f0;
+        color: #1e3a8a;
+        border-color: #94a3b8;
+    }
+
+    .tool-split {
+        width: 1px;
+        background-color: #cbd5e1;
+        margin: 0 3px;
+        height: 18px;
+        align-self: center;
+    }
+
+    /* 專為匯出/列印時生成的文字分流層樣式 */
+    .print-text-block {
+        display: none;
+        width: 100%;
+        min-height: 20px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #000;
+        white-space: pre-wrap;
+        word-break: break-all;
+        text-align: left;
+    }
+
+    .print-inline-text {
+        display: none;
+        font-weight: bold;
+        padding: 0 4px;
+        font-size: 13px;
+    }
+
+    .checkbox-group {
+        display: flex;
+        justify-content: space-around;
+        padding: 3px 0;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        margin-right: 6px;
+        width: 14px;
+        height: 14px;
+    }
+
+    /* 電子簽名上傳樣式 */
+    .sig-upload-container {
+        margin-top: 12px;
+        position: relative;
+    }
+
+    /* 隱藏原生 file input */
+    .sig-file-input {
+        display: none;
+    }
+
+    .upload-btn {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .sig-preview-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .sig-preview-img {
+        width: 270px;
+        object-fit: contain;
+    }
+
+    .delete-sig-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-size: 10px;
+        cursor: pointer;
+        margin-left: 10px;
+        vertical-align: bottom;
+    }
+
+    /* 醫療機構章 */
+    .hospital-stamp-wrapper {
+        display: inline-block;
+        margin-top: 5px;
+        text-align: center;
+    }
+
+    .hospital-stamp-wrapper img {
+        max-width: 95px;
+        max-height: 95px;
+        object-fit: contain;
+    }
+
+    /* ==================== 輸出或列印時的狀態切換 ==================== */
+    .is-exporting input,
+    .is-exporting textarea,
+    .is-exporting select,
+    .is-exporting .editor-tools {
+        display: none !important;
+    }
+
+    .is-exporting .print-text-block,
+    .is-exporting .print-inline-text {
+        display: block !important;
+    }
+
+    .is-exporting span.print-inline-text {
+        display: inline-block !important;
+    }
+
+    .is-exporting .upload-btn,
+    .is-exporting .delete-sig-btn {
+        display: none !important;
+    }
+
+    @media print {
+
         html,
         body {
-            background-color: #f1f5f9;
-            margin: 0;
+            background-color: #fff;
             padding: 0;
-            font-family: "Helvetica Neue", Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-            color: #333;
-            font-size: 13px;
-            line-height: 1.4;
-            height: auto;
-            min-height: 100%;
+            margin: 0;
+            height: auto !important;
+            overflow: visible !important;
         }
 
-        body {
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        /* 頂部功能與分頁列 */
-        .system-header {
-            max-width: 210mm;
-            margin: 0 auto 15px auto;
-            background: #1e293b;
-            padding: 10px 20px;
-            border-radius: 6px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            box-sizing: border-box;
-        }
-
-        .top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tab-group {
-            display: flex;
-            gap: 5px;
-            background: #0f172a;
-            padding: 4px;
-            border-radius: 6px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            color: #94a3b8;
-            border: none;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-pdf {
-            background-color: #2563eb;
-        }
-
-        .btn-pdf:hover {
-            background-color: #1d4ed8;
-        }
-
-        .btn-jpg {
-            background-color: #059669;
-        }
-
-        .btn-jpg:hover {
-            background-color: #047857;
+        .system-header,
+        .editor-tools {
+            display: none !important;
         }
 
         .form-panel {
-            display: none;
+            display: none !important;
         }
 
         .form-panel.active {
-            display: block;
-        }
-
-        /* A4 紙張基本外框 */
-        .page-container {
-            width: 210mm;
-            min-height: 297mm;
-            height: auto !important;
-            margin: 0 auto;
-            padding: 25px 30px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 20px;
-            margin: 5px 0 15px 0;
-            color: #1a365d;
-            letter-spacing: 1px;
-        }
-
-        .doc-sub {
-            text-align: center;
-            font-size: 12px;
-            color: #64748b;
-            margin-top: -10px;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-            table-layout: fixed;
-            /* 鎖定欄位寬度，防止內容撐開變形 */
-        }
-
-        th,
-        td {
-            border: 1px solid #cbd5e1;
-            padding: 8px 10px;
-            vertical-align: middle;
-            word-wrap: break-word;
-            /* 允許文字自動換行 */
-            white-space: normal;
-        }
-
-        th {
-            background-color: #1e3a8a;
-            color: white;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .section-title {
-            background-color: #e2e8f0;
-            font-weight: bold;
-            color: #1e3a8a;
-            font-size: 13.5px;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        select {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            background-color: #f8fafc;
-            padding: 5px 6px;
-            box-sizing: border-box;
-            font-size: 13px;
-            font-family: inherit;
-            border-radius: 3px;
-        }
-
-        select {
-            text-align: center;
-            text-align-last: center;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        select.val-H {
-            color: #dc2626;
-            background-color: #fef2f2;
-        }
-
-        select.val-L {
-            color: #2563eb;
-            background-color: #eff6ff;
-        }
-
-        select.val-N {
-            color: #333;
-            background-color: #f8fafc;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .note-box {
-            font-size: 11px;
-            color: #475569;
-            background-color: #f8fafc;
-            border: 1px dashed #cbd5e1;
-            padding: 6px 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 70px;
-            border: 1px solid #cbd5e1;
-            background-color: #f8fafc;
-            padding: 6px;
-            box-sizing: border-box;
-            font-size: 13px;
-            font-family: inherit;
-            resize: none;
-            border-radius: 3px;
-        }
-
-        .tall-textarea {
-            height: 120px;
-        }
-
-        /* 專為匯出/列印時生成的文字分流層樣式 */
-        .print-text-block {
-            display: none;
-            /* 平時隱藏 */
-            width: 100%;
-            min-height: 20px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #000;
-            white-space: pre-wrap;
-            /* 保持原文字的換行與空白 */
-            word-break: break-all;
-            text-align: left;
-        }
-
-        /* 日期專用行內間距樣式 */
-        .print-inline-text {
-            display: none;
-            font-weight: bold;
-            padding: 0 4px;
-            font-size: 13px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            justify-content: space-around;
-            padding: 3px 0;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .checkbox-label input[type="checkbox"] {
-            margin-right: 6px;
-            width: 14px;
-            height: 14px;
-        }
-
-        /* 電子簽名上傳樣式 */
-        .sig-upload-container {
-            margin-top: 12px;
-            position: relative;
-        }
-
-        #doctor-sig-upload {
-            display: none;
-        }
-
-        .upload-btn {
-            display: inline-block;
-            padding: 5px 10px;
-            background-color: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #sig-preview-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-top: 5px;
-        }
-
-        #sig-preview-img {
-            max-height: 90px;
-            max-width: 160px;
-            object-fit: contain;
-        }
-
-        .delete-sig-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 10px;
-            cursor: pointer;
-            margin-left: 10px;
-            vertical-align: bottom;
-        }
-
-        /* 醫療機構章 */
-        .hospital-stamp-wrapper {
-            display: inline-block;
-            margin-top: 5px;
-            text-align: center;
-        }
-
-        .hospital-stamp-wrapper img {
-            max-width: 95px;
-            max-height: 95px;
-            object-fit: contain;
-        }
-
-        /* ==================== 輸出或列印時的純文字切換開關 ==================== */
-        .is-exporting input,
-        .is-exporting textarea,
-        .is-exporting select {
-            display: none !important;
-        }
-
-        .is-exporting .print-text-block,
-        .is-exporting .print-inline-text {
             display: block !important;
         }
 
-        .is-exporting span.print-inline-text {
-            display: inline-block !important;
+        .page-container {
+            width: 100%;
+            box-shadow: none;
+            padding: 0;
+            margin: 0;
+            height: auto !important;
+            min-height: 0 !important;
         }
 
-        .is-exporting .upload-btn,
-        .is-exporting .delete-sig-btn {
+        input,
+        textarea,
+        select {
             display: none !important;
         }
 
-        @media print {
-
-            html,
-            body {
-                background-color: #fff;
-                padding: 0;
-                margin: 0;
-                height: auto !important;
-                overflow: visible !important;
-            }
-
-            .system-header {
-                display: none !important;
-            }
-
-            .form-panel {
-                display: none !important;
-            }
-
-            .form-panel.active {
-                display: block !important;
-            }
-
-            .page-container {
-                width: 100%;
-                box-shadow: none;
-                padding: 0;
-                margin: 0;
-                height: auto !important;
-                min-height: 0 !important;
-            }
-
-            input,
-            textarea,
-            select {
-                display: none !important;
-            }
-
-            .print-text-block {
-                display: block !important;
-            }
-
-            .print-inline-text {
-                display: inline-block !important;
-            }
-
-            .upload-btn,
-            .delete-sig-btn {
-                display: none !important;
-            }
-
-            table,
-            tr,
-            td {
-                page-break-inside: avoid;
-            }
-
-            th {
-                background-color: #1e3a8a !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .section-title {
-                background-color: #e2e8f0 !important;
-                color: #1e3a8a !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            @page {
-                size: A4;
-                margin: 1.5cm 1.4cm;
-            }
+        .print-text-block {
+            display: block !important;
         }
-    </style>
+
+        .print-inline-text {
+            display: inline-block !important;
+        }
+
+        .upload-btn,
+        .delete-sig-btn {
+            display: none !important;
+        }
+
+        table,
+        tr,
+        td {
+            page-break-inside: avoid;
+        }
+
+        th {
+            background-color: #1e3a8a !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .section-title {
+            background-color: #e2e8f0 !important;
+            color: #1e3a8a !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @page {
+            size: A4;
+            margin: 1.5cm 1.4cm;
+        }
+    }
+</style>
 </head>
 
 <body>
@@ -443,22 +489,22 @@
     <div class="system-header">
         <div class="top-row">
             <div class="tab-group">
-                <button class="tab-btn active" onclick="switchForm('report-panel')">📋 警署健檢報告 (特定勤務)</button>
-                <button class="tab-btn" onclick="switchForm('cert-panel')">📜 臨床診斷證明書 (民眾通用)</button>
+                <button class="tab-btn active" onclick="switchForm('report-panel')">📋 警員健檢報告</button>
+                <button class="tab-btn" onclick="switchForm('cert-panel')">📜 診斷證明書 (大眾用)</button>
             </div>
 
             <div class="btn-group">
+                <button class="btn btn-clear" onclick="clearAllSystemData()">✕ 一鍵清空資料</button>
                 <button class="btn btn-pdf" onclick="handlePDFExport()">輸出 PDF</button>
                 <button class="btn btn-jpg" onclick="handleJPGExport()">輸出 JPG 圖片</button>
             </div>
         </div>
-        <div style="font-size:11px; color: #cbd5e1;">💡 系統提示：已採用「西元日期」格式，且已啟動防切斷排版機制，內容過多時會自動無痕延展換行。</div>
     </div>
 
 
     <div id="report-panel" class="form-panel active">
         <div class="page-container" id="report-content">
-            <h1>警署人員健康檢查報告 (全面精簡表)</h1>
+            <h1>警務人員健康檢查報告</h1>
 
             <table>
                 <tr>
@@ -467,7 +513,7 @@
                 <tr>
                     <td style="width:15%;"><strong>警員姓名</strong></td>
                     <td style="width:35%;">
-                        <input type="text" data-name="警員姓名" placeholder="請輸入姓名">
+                        <input type="text" id="report-name-input" data-name="警員姓名" placeholder="請輸入姓名">
                         <div class="print-text-block"></div>
                     </td>
                     <td style="width:15%;"><strong>生理性別</strong></td>
@@ -501,13 +547,6 @@
                     <td><strong>報告產出日</strong></td>
                     <td>
                         <input type="date" data-name="報告產出日">
-                        <div class="print-text-block"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>醫師編號</strong></td>
-                    <td colspan="3">
-                        <input type="text" data-name="醫師編號" placeholder="請輸入醫編">
                         <div class="print-text-block"></div>
                     </td>
                 </tr>
@@ -738,6 +777,39 @@
                     </td>
                 </tr>
             </table>
+
+            <table>
+                <tr>
+                    <td class="section-title" colspan="2">✍️ 醫療機構與負責醫師證明簽章</td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding: 15px; min-height: 110px; vertical-align: top;">
+                        <strong>檢查負責醫師簽章：</strong>
+                        <div class="sig-upload-container">
+                            <label for="report-doctor-sig-upload" class="upload-btn">➕ 上傳醫師電子簽名檔</label>
+                            <input type="file" id="report-doctor-sig-upload" class="sig-file-input" accept="image/*"
+                                onchange="previewReportSignature(event)">
+
+                            <div id="report-sig-preview-wrapper" class="sig-preview-wrapper" style="display: none;">
+                                <img id="report-sig-preview-img" class="sig-preview-img" src="" alt="醫師簽名">
+                                <button type="button" class="delete-sig-btn" onclick="removeReportSignature()">✕
+                                    刪除</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 50%; padding: 15px; vertical-align: top; text-align: center; position: relative;">
+                        <strong style="display: block; text-align: left; margin-bottom: 5px;">醫療機構證明專用章：</strong>
+                        <div class="hospital-stamp-wrapper">
+                            <img src="logo.png" alt="醫療機構證明專用章"
+                                onerror="this.style.display='none'; document.getElementById('report-stamp-error-text').style.display='block';">
+                            <div id="report-stamp-error-text"
+                                style="display: none; color: #94a3b8; font-style: italic; font-size: 12px; margin-top: 25px;">
+                                ( 遺失 hospital-stamp.jpg 圖檔，請將印章圖片放入同目錄中或於輸出後加蓋實體關防章 )
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
@@ -754,7 +826,7 @@
                 <tr>
                     <td style="width:15%;"><strong>患者姓名</strong></td>
                     <td style="width:35%;">
-                        <input type="text" class="cert-req" data-name="患者姓名" placeholder="請輸入姓名">
+                        <input type="text" id="cert-name-input" class="cert-req" data-name="患者姓名" placeholder="請輸入姓名">
                         <div class="print-text-block"></div>
                     </td>
                     <td style="width:15%;"><strong>生理性別</strong></td>
@@ -773,16 +845,21 @@
                         <input type="date" class="cert-req" data-name="出生年月日">
                         <div class="print-text-block"></div>
                     </td>
-                    <td><strong>病歷號碼</strong></td>
+                    <td><strong>身分證字號</strong></td>
                     <td>
-                        <input type="text" class="cert-req" data-name="病歷號碼" placeholder="請輸入病歷號或身分證字號">
+                        <input type="text" class="cert-req" data-name="病歷號碼" placeholder="請輸入身分證字號">
                         <div class="print-text-block"></div>
                     </td>
                 </tr>
                 <tr>
                     <td><strong>聯絡電話</strong></td>
-                    <td colspan="3">
-                        <input type="text" class="cert-req" data-name="聯絡電話" placeholder="請輸入患者聯絡電話">
+                    <td>
+                        <input type="text" class="cert-req" data-name="聯絡電話" placeholder="請輸入聯絡電話">
+                        <div class="print-text-block"></div>
+                    </td>
+                    <td><strong>就醫日期</strong></td>
+                    <td>
+                        <input type="date" class="cert-req" data-name="就醫日期">
                         <div class="print-text-block"></div>
                     </td>
                 </tr>
@@ -795,7 +872,18 @@
                 <tr>
                     <td style="padding: 10px;">
                         <span style="font-weight: bold; display: block; margin-bottom: 5px;">疾病診斷名稱 (Diagnosis)：</span>
-                        <textarea class="cert-req tall-textarea" data-name="疾病診斷名稱"
+
+                        <div class="editor-tools">
+                            <button type="button" class="tool-btn" onclick="insertBullet('diag-input')">⚫ 項目符號</button>
+                            <button type="button" class="tool-btn" onclick="insertAutoNumber('diag-input')">🔢
+                                數字編號</button>
+                            <button type="button" class="tool-btn" onclick="insertIndent('diag-input')">➡️ 增加縮排</button>
+                            <div class="tool-split"></div>
+                            <button type="button" class="tool-btn" style="color: #ef4444;"
+                                onclick="clearFormat('diag-input')">✕ 清除格式</button>
+                        </div>
+
+                        <textarea id="diag-input" class="cert-req tall-textarea" data-name="疾病診斷名稱"
                             placeholder="請詳細輸入正式醫學病名..."></textarea>
                         <div class="print-text-block" style="border: 1px solid transparent; min-height: 40px;"></div>
                     </td>
@@ -804,28 +892,40 @@
                     <td style="padding: 10px;">
                         <span style="font-weight: bold; display: block; margin-bottom: 5px;">醫囑與處置建議 (Physician's
                             Orders)：</span>
-                        <textarea class="cert-req tall-textarea" data-name="醫囑處置建議"
+
+                        <div class="editor-tools">
+                            <button type="button" class="tool-btn" onclick="insertBullet('order-input')">⚫ 項目符號</button>
+                            <button type="button" class="tool-btn" onclick="insertAutoNumber('order-input')">🔢
+                                數字編號</button>
+                            <button type="button" class="tool-btn" onclick="insertIndent('order-input')">➡️
+                                增加縮排</button>
+                            <div class="tool-split"></div>
+                            <button type="button" class="tool-btn" style="color: #ef4444;"
+                                onclick="clearFormat('order-input')">✕ 清除格式</button>
+                        </div>
+
+                        <textarea id="order-input" class="cert-req tall-textarea" data-name="醫囑處置建議"
                             placeholder="請詳細輸入治療經過、處置建議..."></textarea>
                         <div class="print-text-block" style="border: 1px solid transparent; min-height: 40px;"></div>
                     </td>
                 </tr>
             </table>
 
-            <table style="margin-top: 35px;">
+            <table>
                 <tr>
                     <td class="section-title" colspan="2">✍️ 醫療機構與主治醫師證明簽章</td>
                 </tr>
-                <tr id="signature-row">
+                <tr>
                     <td style="width: 50%; padding: 15px; min-height: 110px; vertical-align: top;">
                         <strong>診治主治醫師簽章：</strong>
                         <div class="sig-upload-container">
-                            <label for="doctor-sig-upload" class="upload-btn">➕ 上傳醫師電子簽名檔</label>
-                            <input type="file" id="doctor-sig-upload" accept="image/*"
-                                onchange="previewDoctorSignature(event)">
+                            <label for="cert-doctor-sig-upload" class="upload-btn">➕ 上傳醫師電子簽名檔</label>
+                            <input type="file" id="cert-doctor-sig-upload" class="sig-file-input" accept="image/*"
+                                onchange="previewCertSignature(event)">
 
-                            <div id="sig-preview-wrapper" style="display: none;">
-                                <img id="sig-preview-img" src="" alt="醫師簽名">
-                                <button type="button" class="delete-sig-btn" onclick="removeDoctorSignature()">✕
+                            <div id="cert-sig-preview-wrapper" class="sig-preview-wrapper" style="display: none;">
+                                <img id="cert-sig-preview-img" class="sig-preview-img" src="" alt="醫師簽名">
+                                <button type="button" class="delete-sig-btn" onclick="removeCertSignature()">✕
                                     刪除</button>
                             </div>
                         </div>
@@ -834,8 +934,8 @@
                         <strong style="display: block; text-align: left; margin-bottom: 5px;">醫療機構證明專用章：</strong>
                         <div class="hospital-stamp-wrapper">
                             <img src="logo.png" alt="醫療機構證明專用章"
-                                onerror="this.style.display='none'; document.getElementById('stamp-error-text').style.display='block';">
-                            <div id="stamp-error-text"
+                                onerror="this.style.display='none'; document.getElementById('cert-stamp-error-text').style.display='block';">
+                            <div id="cert-stamp-error-text"
                                 style="display: none; color: #94a3b8; font-style: italic; font-size: 12px; margin-top: 25px;">
                                 ( 遺失 hospital-stamp.jpg 圖檔，請將印章圖片放入同目錄中或於輸出後加蓋實體關防章 )
                             </div>
@@ -866,254 +966,364 @@
         </div>
     </div>
 
+<script>
+    let currentTabId = 'report-panel';
 
-    <script>
-        let currentTabId = 'report-panel';
-
-        function switchForm(tabId) {
-            currentTabId = tabId;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            if (tabId === 'report-panel') {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            } else {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            }
-            document.querySelectorAll('.form-panel').forEach(panel => panel.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+    function switchForm(tabId) {
+        currentTabId = tabId;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        if (tabId === 'report-panel') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
         }
+        document.querySelectorAll('.form-panel').forEach(panel => panel.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
 
-        function setupSingleCheck(className) {
-            const checkboxes = document.querySelectorAll('.' + className);
-            checkboxes.forEach(cb => {
-                cb.addEventListener('change', function () {
-                    if (this.checked) {
-                        checkboxes.forEach(other => {
-                            if (other !== this) other.checked = false;
-                        });
-                    }
-                });
-            });
-        }
-        setupSingleCheck('xray-cb');
-        setupSingleCheck('status-cb');
-
-        /* 醫師簽名檔處理 */
-        function previewDoctorSignature(event) {
-            const input = event.target;
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const previewImg = document.getElementById('sig-preview-img');
-                    const previewWrapper = document.getElementById('sig-preview-wrapper');
-                    const uploadLabel = document.querySelector('.upload-btn');
-                    previewImg.src = e.target.result;
-                    previewWrapper.style.display = 'inline-block';
-                    uploadLabel.style.display = 'none';
+    function setupSingleCheck(className) {
+        const checkboxes = document.querySelectorAll('.' + className);
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                if (this.checked) {
+                    checkboxes.forEach(other => {
+                        if (other !== this) other.checked = false;
+                    });
                 }
-                reader.readAsDataURL(input.files[0]);
+            });
+        });
+    }
+    setupSingleCheck('xray-cb');
+    setupSingleCheck('status-cb');
+
+    /* 👑 智慧複合版：Word 文字排版控制核心 */
+    function insertBullet(textareaId) {
+        const txt = document.getElementById(textareaId);
+        const val = txt.value;
+        const start = txt.selectionStart;
+        const bulletStr = `⚫ `;
+        txt.value = val.substring(0, start) + bulletStr + val.substring(start);
+        txt.focus();
+        txt.selectionStart = txt.selectionEnd = start + bulletStr.length;
+    }
+
+    function insertAutoNumber(textareaId) {
+        const txt = document.getElementById(textareaId);
+        const val = txt.value;
+        const start = txt.selectionStart;
+        const lines = val.substring(0, start).split('\n');
+        let nextNum = 1;
+
+        for (let i = lines.length - 1; i >= 0; i--) {
+            const match = lines[i].trim().match(/^(\d+)\./);
+            if (match) {
+                nextNum = parseInt(match[1], 10) + 1;
+                break;
             }
         }
+        const numStr = `${nextNum}. `;
+        txt.value = val.substring(0, start) + numStr + val.substring(start);
+        txt.focus();
+        txt.selectionStart = txt.selectionEnd = start + numStr.length;
+    }
 
-        function removeDoctorSignature() {
-            const input = document.getElementById('doctor-sig-upload');
-            const previewWrapper = document.getElementById('sig-preview-wrapper');
-            const uploadLabel = document.querySelector('.upload-btn');
-            const previewImg = document.getElementById('sig-preview-img');
-            input.value = '';
-            previewImg.src = '';
-            previewWrapper.style.display = 'none';
-            uploadLabel.style.display = 'inline-block';
-        }
+    function insertIndent(textareaId) {
+        const txt = document.getElementById(textareaId);
+        const start = txt.selectionStart;
+        const end = txt.selectionEnd;
+        const val = txt.value;
+        const indentStr = "  ";
+        txt.value = val.substring(0, start) + indentStr + val.substring(end);
+        txt.focus();
+        txt.selectionStart = txt.selectionEnd = start + indentStr.length;
+    }
 
-        /* 健檢報告自動防呆判讀 */
-        function calculateCorrectFlag(row) {
-            const inputVal = row.querySelector('.res-input').value.trim();
-            if (inputVal === "" || isNaN(inputVal)) return null;
+    function clearFormat(textareaId) {
+        const txt = document.getElementById(textareaId);
+        let val = txt.value;
+        val = val.replace(/⚫ /g, '');
+        val = val.replace(/^\s*\d+\.\s*/gm, '');
+        val = val.replace(/  /g, '');
+        txt.value = val;
+        txt.focus();
+    }
 
-            const val = parseFloat(inputVal);
-            let min, max;
-
-            if (row.hasAttribute('data-min-male')) {
-                const genderSelect = document.getElementById('officer-gender').value;
-                if (!genderSelect) return null;
-
-                const isFemale = (genderSelect === '女');
-                min = parseFloat(isFemale ? row.getAttribute('data-min-female') : row.getAttribute('data-min-male'));
-                max = parseFloat(isFemale ? row.getAttribute('data-max-female') : row.getAttribute('data-max-male'));
-            } else {
-                min = parseFloat(row.getAttribute('data-min'));
-                max = parseFloat(row.getAttribute('data-max'));
+    /* 1️⃣ 健檢報告分頁的簽名處理 */
+    function previewReportSignature(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('report-sig-preview-img').src = e.target.result;
+                document.getElementById('report-sig-preview-wrapper').style.display = 'inline-block';
+                input.parentNode.querySelector('.upload-btn').style.display = 'none';
             }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
-            if (val > max) return 'H';
-            if (val < min) return 'L';
-            return '—';
+    function removeReportSignature() {
+        const input = document.getElementById('report-doctor-sig-upload');
+        input.value = '';
+        document.getElementById('report-sig-preview-img').src = '';
+        document.getElementById('report-sig-preview-wrapper').style.display = 'none';
+        input.parentNode.querySelector('.upload-btn').style.display = 'inline-block';
+    }
+
+    /* 2️⃣ 診斷證明書分頁的簽名處理 */
+    function previewCertSignature(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('cert-sig-preview-img').src = e.target.result;
+                document.getElementById('cert-sig-preview-wrapper').style.display = 'inline-block';
+                input.parentNode.querySelector('.upload-btn').style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeCertSignature() {
+        const input = document.getElementById('cert-doctor-sig-upload');
+        input.value = '';
+        document.getElementById('cert-sig-preview-img').src = '';
+        document.getElementById('cert-sig-preview-wrapper').style.display = 'none';
+        input.parentNode.querySelector('.upload-btn').style.display = 'inline-block';
+    }
+
+    /* 🧼 核心功能：一鍵清除全系統所有輸入資料 */
+    function clearAllSystemData() {
+        if (confirm("⚠️ 確定要清空整套系統（包含健檢報告與診斷證明書）內填寫的所有資料嗎？\n此動作將無法復原！")) {
+            document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => {
+                el.value = '';
+            });
+
+            document.querySelectorAll('select').forEach(el => {
+                el.selectedIndex = 0;
+                if (el.classList.contains('flag-select') || el.id === 'officer-gender') {
+                    updateSelectStyle(el);
+                }
+            });
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+                el.checked = false;
+            });
+
+            document.querySelectorAll('.print-text-block, .print-inline-text').forEach(el => {
+                el.innerHTML = '';
+                el.textContent = '';
+            });
+
+            removeReportSignature();
+            removeCertSignature();
+
+            alert("✨ 系統資料已全數清空，回復至初始乾淨狀態。");
+        }
+    }
+
+    /* 健檢報告自動防呆判讀 */
+    function calculateCorrectFlag(row) {
+        const inputVal = row.querySelector('.res-input').value.trim();
+        if (inputVal === "" || isNaN(inputVal)) return null;
+
+        const val = parseFloat(inputVal);
+        let min, max;
+
+        if (row.hasAttribute('data-min-male')) {
+            const genderSelect = document.getElementById('officer-gender').value;
+            if (!genderSelect) return null;
+
+            const isFemale = (genderSelect === '女');
+            min = parseFloat(isFemale ? row.getAttribute('data-min-female') : row.getAttribute('data-min-male'));
+            max = parseFloat(isFemale ? row.getAttribute('data-max-female') : row.getAttribute('data-max-male'));
+        } else {
+            min = parseFloat(row.getAttribute('data-min'));
+            max = parseFloat(row.getAttribute('data-max'));
         }
 
-        function updateSelectStyle(selectEl) {
-            selectEl.classList.remove('val-H', 'val-L', 'val-N');
-            if (selectEl.value === 'H') selectEl.classList.add('val-H');
-            else if (selectEl.value === 'L') selectEl.classList.add('val-L');
-            else selectEl.classList.add('val-N');
-        }
+        if (val > max) return 'H';
+        if (val < min) return 'L';
+        return '—';
+    }
 
-        const rows = document.querySelectorAll('#biochem-tbody tr');
+    function updateSelectStyle(selectEl) {
+        selectEl.classList.remove('val-H', 'val-L', 'val-N');
+        if (selectEl.value === 'H') selectEl.classList.add('val-H');
+        else if (selectEl.value === 'L') selectEl.classList.add('val-L');
+        else selectEl.classList.add('val-N');
+    }
+
+    const rows = document.querySelectorAll('#biochem-tbody tr');
+    rows.forEach(row => {
+        const input = row.querySelector('.res-input');
+        const select = row.querySelector('.flag-select');
+
+        input.addEventListener('change', () => {
+            const correctFlag = calculateCorrectFlag(row);
+            if (correctFlag !== null) {
+                select.value = correctFlag;
+                updateSelectStyle(select);
+            }
+        });
+        select.addEventListener('change', () => updateSelectStyle(select));
+    });
+
+    document.getElementById('officer-gender').addEventListener('change', () => {
         rows.forEach(row => {
-            const input = row.querySelector('.res-input');
-            const select = row.querySelector('.flag-select');
-
-            input.addEventListener('change', () => {
+            if (row.hasAttribute('data-min-male')) {
+                const select = row.querySelector('.flag-select');
                 const correctFlag = calculateCorrectFlag(row);
                 if (correctFlag !== null) {
                     select.value = correctFlag;
                     updateSelectStyle(select);
                 }
-            });
-            select.addEventListener('change', () => updateSelectStyle(select));
+            }
+        });
+    });
+
+    /* 表單驗證 */
+    function validateActiveForm() {
+        if (currentTabId === 'report-panel') {
+            const reportInputs = document.querySelectorAll('#report-content input[type="text"], #report-content input[type="date"], #report-content textarea, #officer-gender');
+            for (let input of reportInputs) {
+                if (!input.value.trim() && input.getAttribute('data-name') !== "負責醫師姓名複簽" && input.getAttribute('data-name') !== "負責醫師證照字號複簽") {
+                    const fieldName = input.getAttribute('data-name') || "未定義欄位";
+                    alert(`❌ 填寫未完成 (健康檢查報告)！\n請填寫或選擇「${fieldName}」欄位。`);
+                    input.focus();
+                    return false;
+                }
+            }
+            if (!document.querySelector('.xray-cb:checked')) { alert("❌ 請勾選「胸腔 X 光」狀態。"); return false; }
+            if (!document.querySelector('.status-cb:checked')) { alert("❌ 請勾選「綜合總評」狀態。"); return false; }
+        } else {
+            const certInputs = document.querySelectorAll('#cert-panel .cert-req');
+            for (let input of certInputs) {
+                if (!input.value.trim()) {
+                    const fieldName = input.getAttribute('data-name') || "未定義欄位";
+                    alert(`❌ 填寫未完成 (診斷證明書)！\n請填寫或選擇「${fieldName}」欄位。`);
+                    input.focus();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /* 將資料值精準同步複製到純文字排版層 */
+    function syncInputsToPrintBlocks(panelId) {
+        const panel = document.getElementById(panelId);
+
+        if (panelId === 'cert-panel') {
+            const yearVal = document.getElementById('cert-year-input').value;
+            const monthVal = document.getElementById('cert-month-input').value;
+            const dayVal = document.getElementById('cert-day-input').value;
+
+            document.getElementById('cert-year-text').textContent = yearVal || "—";
+            document.getElementById('cert-month-text').textContent = monthVal || "—";
+            document.getElementById('cert-day-text').textContent = dayVal || "—";
+        }
+
+        const textFields = panel.querySelectorAll('input[type="text"], textarea');
+        textFields.forEach(field => {
+            if (field.id === 'cert-year-input' || field.id === 'cert-month-input' || field.id === 'cert-day-input') {
+                return;
+            }
+            const parent = field.parentNode;
+            const printBlock = parent.querySelector('.print-text-block, .print-inline-text');
+            if (printBlock) {
+                let textValue = field.value;
+                let safeHtml = textValue
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+                printBlock.innerHTML = safeHtml;
+            }
         });
 
-        document.getElementById('officer-gender').addEventListener('change', () => {
-            rows.forEach(row => {
-                if (row.hasAttribute('data-min-male')) {
-                    const select = row.querySelector('.flag-select');
-                    const correctFlag = calculateCorrectFlag(row);
-                    if (correctFlag !== null) {
-                        select.value = correctFlag;
-                        updateSelectStyle(select);
-                    }
-                }
-            });
+        const dateFields = panel.querySelectorAll('input[type="date"]');
+        dateFields.forEach(field => {
+            const parent = field.parentNode;
+            const printBlock = parent.querySelector('.print-text-block');
+            if (printBlock) {
+                printBlock.textContent = field.value || "—";
+            }
         });
 
-        /* 表單驗證 */
-        function validateActiveForm() {
-            if (currentTabId === 'report-panel') {
-                const reportInputs = document.querySelectorAll('#report-content input[type="text"], #report-content input[type="date"], #report-content textarea, #officer-gender');
-                for (let input of reportInputs) {
-                    if (!input.value.trim()) {
-                        const fieldName = input.getAttribute('data-name') || "未定義欄位";
-                        alert(`❌ 填寫未完成 (健康檢查報告)！\n請填寫或選擇「${fieldName}」欄位。`);
-                        input.focus();
-                        return false;
-                    }
-                }
-                if (!document.querySelector('.xray-cb:checked')) { alert("❌ 請勾選「胸腔 X 光」狀態。"); return false; }
-                if (!document.querySelector('.status-cb:checked')) { alert("❌ 請勾選「綜合總評」狀態。"); return false; }
-            } else {
-                const certInputs = document.querySelectorAll('#cert-panel .cert-req');
-                for (let input of certInputs) {
-                    if (!input.value.trim()) {
-                        const fieldName = input.getAttribute('data-name') || "未定義欄位";
-                        alert(`❌ 填寫未完成 (診斷證明書)！\n請填寫或選擇「${fieldName}」欄位。`);
-                        input.focus();
-                        return false;
-                    }
-                }
+        const selectFields = panel.querySelectorAll('select');
+        selectFields.forEach(select => {
+            const parent = select.parentNode;
+            const printBlock = parent.querySelector('.print-text-block');
+            if (printBlock) {
+                printBlock.textContent = select.options[select.selectedIndex]?.text || "—";
             }
-            return true;
-        }
+        });
+    }
 
-        /* 將資料值精準同步複製到純文字排版層 */
-        function syncInputsToPrintBlocks(panelId) {
-            const panel = document.getElementById(panelId);
-
-            // 1. 精準對號入座處理特殊的年月日欄位
-            if (panelId === 'cert-panel') {
-                const yearVal = document.getElementById('cert-year-input').value;
-                const monthVal = document.getElementById('cert-month-input').value;
-                const dayVal = document.getElementById('cert-day-input').value;
-
-                document.getElementById('cert-year-text').textContent = yearVal || "—";
-                document.getElementById('cert-month-text').textContent = monthVal || "—";
-                document.getElementById('cert-day-text').textContent = dayVal || "—";
-            }
-
-            // 2. 處理一般的 input[type="text"] 與 textarea (排除掉剛才手動處理的年月日)
-            const textFields = panel.querySelectorAll('input[type="text"], textarea');
-            textFields.forEach(field => {
-                if (field.id === 'cert-year-input' || field.id === 'cert-month-input' || field.id === 'cert-day-input') {
-                    return;
-                }
-                const parent = field.parentNode;
-                const printBlock = parent.querySelector('.print-text-block, .print-inline-text');
-                if (printBlock) {
-                    printBlock.textContent = field.value;
-                }
-            });
-
-            // 3. 處理 input[type="date"]
-            const dateFields = panel.querySelectorAll('input[type="date"]');
-            dateFields.forEach(field => {
-                const parent = field.parentNode;
-                const printBlock = parent.querySelector('.print-text-block');
-                if (printBlock) {
-                    printBlock.textContent = field.value || "—";
-                }
-            });
-
-            // 4. 處理 select 下拉選單
-            const selectFields = panel.querySelectorAll('select');
-            selectFields.forEach(select => {
-                const parent = select.parentNode;
-                const printBlock = parent.querySelector('.print-text-block');
-                if (printBlock) {
-                    printBlock.textContent = select.options[select.selectedIndex]?.text || "—";
-                }
-            });
-        }
-
-        /* 導出 PDF */
-        function handlePDFExport() {
-            if (validateActiveForm()) {
-                syncInputsToPrintBlocks(currentTabId);
-                window.print();
-            }
-        }
-
-        /* 導出 JPG (全面解決切斷、跑版) */
-        function handleJPGExport() {
-            if (!validateActiveForm()) return;
-
-            const targetId = (currentTabId === 'report-panel') ? 'report-content' : 'cert-content';
-            const fileNamePrefix = (currentTabId === 'report-panel') ? '警員體檢報告_' : '患者診斷證明書_';
-
-            const element = document.getElementById(targetId);
-
-            // 1. 同步資料
+    function handlePDFExport() {
+        if (validateActiveForm()) {
             syncInputsToPrintBlocks(currentTabId);
-
-            // 2. 啟動無痕模式
-            element.classList.add('is-exporting');
-
-            // 3. 動態計算文字展開後的實體高度
-            const actualHeight = element.scrollHeight;
-            const originalHeightStyle = element.style.height;
-            element.style.height = actualHeight + 'px';
-
-            // 4. 執行網頁截圖
-            html2canvas(element, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                height: actualHeight,
-                windowHeight: actualHeight,
-                scrollY: 0
-            }).then(canvas => {
-                element.style.height = originalHeightStyle;
-                element.classList.remove('is-exporting');
-
-                const link = document.createElement('a');
-                link.download = fileNamePrefix + new Date().toISOString().slice(0, 10) + '.jpg';
-                link.href = canvas.toDataURL('image/jpeg', 0.9);
-                link.click();
-            }).catch(err => {
-                element.style.height = originalHeightStyle;
-                element.classList.remove('is-exporting');
-                alert('圖片匯出失敗，建議改用「輸出 PDF」！');
-            });
+            window.print();
         }
-    </script>
+    }
 
+    /* 👑 優化後的圖片匯出機制（支援自訂動態檔名格式） */
+    function handleJPGExport() {
+        if (!validateActiveForm()) return;
+
+        const targetId = (currentTabId === 'report-panel') ? 'report-content' : 'cert-content';
+
+        // 🛠️ 動態擷取患者/警員姓名與系統日期
+        let nameValue = "未命名";
+        let docTypeName = "診斷證明書";
+
+        if (currentTabId === 'report-panel') {
+            const rName = document.getElementById('report-name-input').value.trim();
+            if (rName) nameValue = rName;
+            docTypeName = "健檢報告";
+        } else {
+            const cName = document.getElementById('cert-name-input').value.trim();
+            if (cName) nameValue = cName;
+            docTypeName = "診斷證明書";
+        }
+
+        // 格式化當前日期 (YYYY-MM-DD)
+        const todayStr = new Date().toISOString().slice(0, 10);
+
+        // 👑 組裝成您要求的格式：[姓名]_診斷證明書_[日期].jpg
+        const finalFileName = `${nameValue}_${docTypeName}_${todayStr}.jpg`;
+
+        const element = document.getElementById(targetId);
+
+        syncInputsToPrintBlocks(currentTabId);
+        element.classList.add('is-exporting');
+
+        const actualHeight = element.scrollHeight;
+        const originalHeightStyle = element.style.height;
+        element.style.height = actualHeight + 'px';
+
+        html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            height: actualHeight,
+            windowHeight: actualHeight,
+            scrollY: 0
+        }).then(canvas => {
+            element.style.height = originalHeightStyle;
+            element.classList.remove('is-exporting');
+
+            const link = document.createElement('a');
+            link.download = finalFileName; // 使用自訂格式檔名
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }).catch(err => {
+            element.style.height = originalHeightStyle;
+            element.classList.remove('is-exporting');
+            alert('圖片匯出失敗，建議改用「輸出 PDF」！');
+        });
+    }
+</script>
 </body>
 
 </html>
