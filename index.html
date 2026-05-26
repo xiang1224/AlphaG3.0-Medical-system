@@ -237,7 +237,7 @@
             height: 120px;
         }
 
-        /* 💡 精髓：專為匯出/列印時生成的文字分流層樣式 */
+        /* 專為匯出/列印時生成的文字分流層樣式 */
         .print-text-block {
             display: none;
             /* 平時隱藏 */
@@ -256,8 +256,8 @@
         .print-inline-text {
             display: none;
             font-weight: bold;
-            padding: 0 8px;
-            font-size: 14px;
+            padding: 0 4px;
+            font-size: 13px;
         }
 
         .checkbox-group {
@@ -308,7 +308,7 @@
         }
 
         #sig-preview-img {
-            max-height: 55px;
+            max-height: 90px;
             max-width: 160px;
             object-fit: contain;
         }
@@ -338,7 +338,7 @@
             object-fit: contain;
         }
 
-        /* ==================== 輸出或列印時的純文字切換開關 (CSS 控制) ==================== */
+        /* ==================== 輸出或列印時的純文字切換開關 ==================== */
         .is-exporting input,
         .is-exporting textarea,
         .is-exporting select {
@@ -391,7 +391,6 @@
                 min-height: 0 !important;
             }
 
-            /* 啟動列印模式的輸入框隱藏與文字顯示 */
             input,
             textarea,
             select {
@@ -453,13 +452,13 @@
                 <button class="btn btn-jpg" onclick="handleJPGExport()">輸出 JPG 圖片</button>
             </div>
         </div>
-        <div style="font-size:11px; color: #cbd5e1;">💡 系統提示：已採用「終極無痕文本渲染技術」，任憑文字再長，轉圖及列印時均會完美自動換行、永不切斷！</div>
+        <div style="font-size:11px; color: #cbd5e1;">💡 系統提示：已採用「西元日期」格式，且已啟動防切斷排版機制，內容過多時會自動無痕延展換行。</div>
     </div>
 
 
     <div id="report-panel" class="form-panel active">
         <div class="page-container" id="report-content">
-            <h1>警署人員健康檢查報告</h1>
+            <h1>警署人員健康檢查報告 (全面精簡表)</h1>
 
             <table>
                 <tr>
@@ -746,7 +745,6 @@
     <div id="cert-panel" class="form-panel">
         <div class="page-container" id="cert-content">
             <h1>聖安地列斯醫療服務隊 (SAMS) - 診斷證明書</h1>
-
             <div class="doc-sub">MEDICAL DIAGNOSIS CERTIFICATE</div>
 
             <table>
@@ -846,12 +844,18 @@
                 </tr>
                 <tr>
                     <td colspan="2" style="padding: 12px; text-align: right; font-size: 13px;">
-                        <input type="text" class="cert-req" style="width: 50px; text-align: center;" data-name="開立年份"
-                            placeholder="年"><span class="print-inline-text"></span> <strong>年</strong>
-                        <input type="text" class="cert-req" style="width: 40px; text-align: center;" data-name="開立月份"
-                            placeholder="月"><span class="print-inline-text"></span> <strong>月</strong>
-                        <input type="text" class="cert-req" style="width: 40px; text-align: center;" data-name="開立日期"
-                            placeholder="日"><span class="print-inline-text"></span> <strong>日 證明開立</strong>
+                        <strong>西元</strong>
+                        <input type="text" id="cert-year-input" class="cert-req"
+                            style="width: 65px; text-align: center;" data-name="開立年份" placeholder="年">
+                        <span id="cert-year-text" class="print-inline-text"></span> <strong>年</strong>
+
+                        <input type="text" id="cert-month-input" class="cert-req"
+                            style="width: 40px; text-align: center;" data-name="開立月份" placeholder="月">
+                        <span id="cert-month-text" class="print-inline-text"></span> <strong>月</strong>
+
+                        <input type="text" id="cert-day-input" class="cert-req" style="width: 40px; text-align: center;"
+                            data-name="開立日期" placeholder="日">
+                        <span id="cert-day-text" class="print-inline-text"></span> <strong>日 證明開立</strong>
                     </td>
                 </tr>
             </table>
@@ -1009,13 +1013,27 @@
             return true;
         }
 
-        /* 💡 核心：將目前畫面的資料值同步複製到純文字排版層 (div/span) 裡 */
+        /* 將資料值精準同步複製到純文字排版層 */
         function syncInputsToPrintBlocks(panelId) {
             const panel = document.getElementById(panelId);
 
-            // 處理 input[type="text"] 與 textarea
+            // 1. 精準對號入座處理特殊的年月日欄位
+            if (panelId === 'cert-panel') {
+                const yearVal = document.getElementById('cert-year-input').value;
+                const monthVal = document.getElementById('cert-month-input').value;
+                const dayVal = document.getElementById('cert-day-input').value;
+
+                document.getElementById('cert-year-text').textContent = yearVal || "—";
+                document.getElementById('cert-month-text').textContent = monthVal || "—";
+                document.getElementById('cert-day-text').textContent = dayVal || "—";
+            }
+
+            // 2. 處理一般的 input[type="text"] 與 textarea (排除掉剛才手動處理的年月日)
             const textFields = panel.querySelectorAll('input[type="text"], textarea');
             textFields.forEach(field => {
+                if (field.id === 'cert-year-input' || field.id === 'cert-month-input' || field.id === 'cert-day-input') {
+                    return;
+                }
                 const parent = field.parentNode;
                 const printBlock = parent.querySelector('.print-text-block, .print-inline-text');
                 if (printBlock) {
@@ -1023,7 +1041,7 @@
                 }
             });
 
-            // 處理 input[type="date"]
+            // 3. 處理 input[type="date"]
             const dateFields = panel.querySelectorAll('input[type="date"]');
             dateFields.forEach(field => {
                 const parent = field.parentNode;
@@ -1033,7 +1051,7 @@
                 }
             });
 
-            // 處理 select 下拉選單
+            // 4. 處理 select 下拉選單
             const selectFields = panel.querySelectorAll('select');
             selectFields.forEach(select => {
                 const parent = select.parentNode;
@@ -1047,7 +1065,7 @@
         /* 導出 PDF */
         function handlePDFExport() {
             if (validateActiveForm()) {
-                syncInputsToPrintBlocks(currentTabId); // 列印前同步文字
+                syncInputsToPrintBlocks(currentTabId);
                 window.print();
             }
         }
@@ -1061,18 +1079,18 @@
 
             const element = document.getElementById(targetId);
 
-            // 1. 同步所有資料到純文字區塊
+            // 1. 同步資料
             syncInputsToPrintBlocks(currentTabId);
 
-            // 2. 啟動無痕匯出模式 (隱藏所有 input，露出 div 文字讓內容無極限撐高)
+            // 2. 啟動無痕模式
             element.classList.add('is-exporting');
 
-            // 3. 動態抓取文字撐開後的真實總高度
+            // 3. 動態計算文字展開後的實體高度
             const actualHeight = element.scrollHeight;
             const originalHeightStyle = element.style.height;
             element.style.height = actualHeight + 'px';
 
-            // 4. 執行網頁渲染截圖
+            // 4. 執行網頁截圖
             html2canvas(element, {
                 scale: 2,
                 useCORS: true,
@@ -1081,7 +1099,6 @@
                 windowHeight: actualHeight,
                 scrollY: 0
             }).then(canvas => {
-                // 還原原本的可輸入網頁狀態
                 element.style.height = originalHeightStyle;
                 element.classList.remove('is-exporting');
 
