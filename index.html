@@ -315,12 +315,24 @@
         align-items: center;
         font-weight: bold;
         cursor: pointer;
+        position: relative;
+        /* 👑 為了 ✔️ 對齊 */
     }
 
     .checkbox-label input[type="checkbox"] {
         margin-right: 6px;
         width: 14px;
         height: 14px;
+    }
+
+    /* 👑 專為圖片/列印設計的✔️顯示標記 */
+    .print-check-mark {
+        display: none;
+        /* 平時隱藏 */
+        color: #2563eb;
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 6px;
     }
 
     /* 電子簽名上傳樣式 */
@@ -399,9 +411,39 @@
         display: inline-block !important;
     }
 
+    /* 👑 核心修正：讓導出 JPG 圖片時，也能隱藏原始複選框並正確顯示 ✔️ */
+    .is-exporting input[type="checkbox"] {
+        display: none !important;
+    }
+
+    .is-exporting input[type="checkbox"]:checked~.print-check-mark {
+        display: inline-block !important;
+    }
+
     .is-exporting .upload-btn,
     .is-exporting .delete-sig-btn {
         display: none !important;
+    }
+
+    /* 👑 讓匯出圖片與列印時，異常標記（H/L）依然保有對應的顏色 */
+    .is-exporting .flag-H-color,
+    .flag-H-color {
+        color: #dc2626 !important; /* 紅色 H */
+    }
+
+    .is-exporting .flag-L-color,
+    .flag-L-color {
+        color: #2563eb !important; /* 藍色 L */
+    }
+
+    /* 強制確保在圖片導出中帶有 text-center 的元件能完美置中 */
+    .is-exporting .text-center {
+        text-align: center !important;
+    }
+
+    /* 修正診斷書最底下的中華民國開立日期欄位偏邊問題 */
+    #cert-panel table tr td[colspan="2"] {
+        text-align: center !important;
     }
 
     @media print {
@@ -449,6 +491,26 @@
 
         .print-inline-text {
             display: inline-block !important;
+        }
+
+        /* 👑 列印模式亦採用 ✔️ 標記取代方塊 */
+        input[type="checkbox"] {
+            display: none !important;
+        }
+
+        input[type="checkbox"]:checked~.print-check-mark {
+            display: inline-block !important;
+        }
+
+        .flag-H-color {
+        color: #dc2626 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        }
+        .flag-L-color {
+            color: #2563eb !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         .upload-btn,
@@ -741,14 +803,17 @@
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <strong>影像結果</strong>：
                             <div class="checkbox-group" style="gap: 25px;">
-                                <label class="checkbox-label"><input type="checkbox" name="xray-opt" class="xray-cb"
-                                        value="正常"> 正常</label>
-                                <label class="checkbox-label"><input type="checkbox" name="xray-opt" class="xray-cb"
-                                        value="異常"> 異常</label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="xray-opt" class="xray-cb" value="正常">
+                                    <span class="print-check-mark">☑</span> 正常
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="xray-opt" class="xray-cb" value="異常">
+                                    <span class="print-check-mark">☑</span> 異常
+                                </label>
                             </div>
                         </div>
-                        <input type="text" id="xray-text" style="margin-top: 6px;" placeholder="影像詳細說明紀錄..."
-                            data-name="胸腔X光詳細紀錄">
+                        <input type="text" id="xray-text" style="margin-top: 6px;" placeholder="影像詳細說明紀錄..." data-name="胸腔X光詳細紀錄">
                         <div class="print-text-block" style="margin-top: 6px;"></div>
                     </td>
                 </tr>
@@ -759,14 +824,20 @@
                     <td class="section-title">🔍 綜合總評與複查建議</td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="padding: 8px 10px;">
                         <div class="checkbox-group">
-                            <label class="checkbox-label" style="color: #16a34a;"><input type="checkbox"
-                                    name="status-opt" class="status-cb" value="完全合格"> 🟢 完全合格</label>
-                            <label class="checkbox-label" style="color: #ca8a04;"><input type="checkbox"
-                                    name="status-opt" class="status-cb" value="合格但需注意"> 🟡 合格但需注意</label>
-                            <label class="checkbox-label" style="color: #dc2626;"><input type="checkbox"
-                                    name="status-opt" class="status-cb" value="暫緩合格／需複查"> 🔴 暫緩合格／需複查</label>
+                            <label class="checkbox-label" style="color: #16a34a;">
+                                <input type="checkbox" name="status-opt" class="status-cb" value="完全合格">
+                                <span class="print-check-mark">☑</span> 🟢 完全合格
+                            </label>
+                            <label class="checkbox-label" style="color: #ca8a04;">
+                                <input type="checkbox" name="status-opt" class="status-cb" value="合格但需注意">
+                                <span class="print-check-mark">☑</span> 🟡 合格但需注意
+                            </label>
+                            <label class="checkbox-label" style="color: #dc2626;">
+                                <input type="checkbox" name="status-opt" class="status-cb" value="暫緩合格／需複查">
+                                <span class="print-check-mark">☑</span> 🔴 暫緩合格／需複查
+                            </label>
                         </div>
                     </td>
                 </tr>
@@ -965,10 +1036,10 @@
             </div>
         </div>
     </div>
-
 <script>
     let currentTabId = 'report-panel';
 
+    // 分頁切換邏輯
     function switchForm(tabId) {
         currentTabId = tabId;
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -981,6 +1052,7 @@
         document.getElementById(tabId).classList.add('active');
     }
 
+    // 限制複選框只能單選（適用於 X光 與 綜合總評）
     function setupSingleCheck(className) {
         const checkboxes = document.querySelectorAll('.' + className);
         checkboxes.forEach(cb => {
@@ -996,7 +1068,7 @@
     setupSingleCheck('xray-cb');
     setupSingleCheck('status-cb');
 
-    /* 👑 智慧複合版：Word 文字排版控制核心 */
+    /* 👑 Word 樣式文字控制工具 */
     function insertBullet(textareaId) {
         const txt = document.getElementById(textareaId);
         const val = txt.value;
@@ -1032,7 +1104,7 @@
         const start = txt.selectionStart;
         const end = txt.selectionEnd;
         const val = txt.value;
-        const indentStr = "  ";
+        const indentStr = "　　";
         txt.value = val.substring(0, start) + indentStr + val.substring(end);
         txt.focus();
         txt.selectionStart = txt.selectionEnd = start + indentStr.length;
@@ -1043,7 +1115,7 @@
         let val = txt.value;
         val = val.replace(/⚫ /g, '');
         val = val.replace(/^\s*\d+\.\s*/gm, '');
-        val = val.replace(/  /g, '');
+        val = val.replace(/　　/g, '');
         txt.value = val;
         txt.focus();
     }
@@ -1092,7 +1164,7 @@
         input.parentNode.querySelector('.upload-btn').style.display = 'inline-block';
     }
 
-    /* 🧼 核心功能：一鍵清除全系統所有輸入資料 */
+    /* 🧼 一鍵清除全系統所有輸入資料 */
     function clearAllSystemData() {
         if (confirm("⚠️ 確定要清空整套系統（包含健檢報告與診斷證明書）內填寫的所有資料嗎？\n此動作將無法復原！")) {
             document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => {
@@ -1113,6 +1185,7 @@
             document.querySelectorAll('.print-text-block, .print-inline-text').forEach(el => {
                 el.innerHTML = '';
                 el.textContent = '';
+                el.className = 'print-text-block'; // 重設類別
             });
 
             removeReportSignature();
@@ -1122,7 +1195,7 @@
         }
     }
 
-    /* 健檢報告自動防呆判讀 */
+    /* 健檢報告自動防呆判讀邏輯 */
     function calculateCorrectFlag(row) {
         const inputVal = row.querySelector('.res-input').value.trim();
         if (inputVal === "" || isNaN(inputVal)) return null;
@@ -1182,7 +1255,7 @@
         });
     });
 
-    /* 表單驗證 */
+    /* 表單空白欄位防呆驗證 */
     function validateActiveForm() {
         if (currentTabId === 'report-panel') {
             const reportInputs = document.querySelectorAll('#report-content input[type="text"], #report-content input[type="date"], #report-content textarea, #officer-gender');
@@ -1210,7 +1283,7 @@
         return true;
     }
 
-    /* 將資料值精準同步複製到純文字排版層 */
+    /* 👑 核心優化：將輸入資料同步至文字層，並動態補上異常顏色標記的 Class */
     function syncInputsToPrintBlocks(panelId) {
         const panel = document.getElementById(panelId);
 
@@ -1224,6 +1297,7 @@
             document.getElementById('cert-day-text').textContent = dayVal || "—";
         }
 
+        // 同步一般文字輸入框與大文字區
         const textFields = panel.querySelectorAll('input[type="text"], textarea');
         textFields.forEach(field => {
             if (field.id === 'cert-year-input' || field.id === 'cert-month-input' || field.id === 'cert-day-input') {
@@ -1241,6 +1315,7 @@
             }
         });
 
+        // 同步日期欄位
         const dateFields = panel.querySelectorAll('input[type="date"]');
         dateFields.forEach(field => {
             const parent = field.parentNode;
@@ -1250,16 +1325,31 @@
             }
         });
 
+        // 同步下拉選單（包含異常標記的顏色附加）
         const selectFields = panel.querySelectorAll('select');
         selectFields.forEach(select => {
             const parent = select.parentNode;
             const printBlock = parent.querySelector('.print-text-block');
             if (printBlock) {
-                printBlock.textContent = select.options[select.selectedIndex]?.text || "—";
+                const selectedText = select.options[select.selectedIndex]?.text || "—";
+                const selectedValue = select.value;
+
+                printBlock.textContent = selectedText;
+
+                // 👑 重置並根據 H/L 狀態附加對應顏色類別，讓導出圖片時有紅藍色
+                printBlock.className = 'print-text-block text-center';
+                if (select.classList.contains('flag-select')) {
+                    if (selectedValue === 'H') {
+                        printBlock.classList.add('flag-H-color');
+                    } else if (selectedValue === 'L') {
+                        printBlock.classList.add('flag-L-color');
+                    }
+                }
             }
         });
     }
 
+    // 輸出 PDF 控制
     function handlePDFExport() {
         if (validateActiveForm()) {
             syncInputsToPrintBlocks(currentTabId);
@@ -1267,13 +1357,12 @@
         }
     }
 
-    /* 👑 優化後的圖片匯出機制（支援自訂動態檔名格式） */
+    // 輸出 JPG 圖片控制
     function handleJPGExport() {
         if (!validateActiveForm()) return;
 
         const targetId = (currentTabId === 'report-panel') ? 'report-content' : 'cert-content';
 
-        // 🛠️ 動態擷取患者/警員姓名與系統日期
         let nameValue = "未命名";
         let docTypeName = "診斷證明書";
 
@@ -1287,10 +1376,7 @@
             docTypeName = "診斷證明書";
         }
 
-        // 格式化當前日期 (YYYY-MM-DD)
         const todayStr = new Date().toISOString().slice(0, 10);
-
-        // 👑 組裝成您要求的格式：[姓名]_診斷證明書_[日期].jpg
         const finalFileName = `${nameValue}_${docTypeName}_${todayStr}.jpg`;
 
         const element = document.getElementById(targetId);
@@ -1314,7 +1400,7 @@
             element.classList.remove('is-exporting');
 
             const link = document.createElement('a');
-            link.download = finalFileName; // 使用自訂格式檔名
+            link.download = finalFileName;
             link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
         }).catch(err => {
