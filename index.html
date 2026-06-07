@@ -5,560 +5,785 @@
     <meta charset="UTF-8">
     <title>醫療管理系統 — 輸入平台</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-    /* 基礎全域設定 */
-    html,
-    body {
-        background-color: #f1f5f9;
-        margin: 0;
-        padding: 0;
-        font-family: "Helvetica Neue", Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-        color: #333;
-        font-size: 13px;
-        line-height: 1.4;
-        height: auto;
-        min-height: 100%;
-    }
-
-    body {
-        padding: 20px;
-        box-sizing: border-box;
-    }
-
-    /* 頂部功能與分頁列 */
-    .system-header {
-        max-width: 210mm;
-        margin: 0 auto 15px auto;
-        background: #1e293b;
-        padding: 10px 20px;
-        border-radius: 6px;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        box-sizing: border-box;
-    }
-
-    .top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .tab-group {
-        display: flex;
-        gap: 5px;
-        background: #0f172a;
-        padding: 4px;
-        border-radius: 6px;
-    }
-
-    .tab-btn {
-        background: transparent;
-        color: #94a3b8;
-        border: none;
-        padding: 8px 16px;
-        font-size: 13px;
-        font-weight: bold;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-        background: #2563eb;
-        color: white;
-    }
-
-    .btn-group {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn {
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        font-size: 13px;
-        font-weight: bold;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-    .btn-pdf {
-        background-color: #2563eb;
-    }
-
-    .btn-pdf:hover {
-        background-color: #1d4ed8;
-    }
-
-    .btn-jpg {
-        background-color: #059669;
-    }
-
-    .btn-jpg:hover {
-        background-color: #047857;
-    }
-
-    .btn-clear {
-        background-color: #ef4444;
-    }
-
-    .btn-clear:hover {
-        background-color: #dc2626;
-    }
-
-    .form-panel {
-        display: none;
-    }
-
-    .form-panel.active {
-        display: block;
-    }
-
-    /* A4 紙張基本外框 */
-    .page-container {
-        width: 210mm;
-        min-height: 297mm;
-        height: auto !important;
-        margin: 0 auto;
-        padding: 25px 30px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        box-sizing: border-box;
-        position: relative;
-    }
-
-    h1 {
-        text-align: center;
-        font-size: 20px;
-        margin: 5px 0 15px 0;
-        color: #1a365d;
-        letter-spacing: 1px;
-    }
-
-    .doc-sub {
-        text-align: center;
-        font-size: 12px;
-        color: #64748b;
-        margin-top: -10px;
-        margin-bottom: 20px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 10px;
-        table-layout: fixed;
-    }
-
-    th,
-    td {
-        border: 1px solid #cbd5e1;
-        padding: 8px 10px;
-        vertical-align: middle;
-        word-wrap: break-word;
-        white-space: normal;
-    }
-
-    th {
-        background-color: #1e3a8a;
-        color: white;
-        font-weight: bold;
-        font-size: 13px;
-    }
-
-    .section-title {
-        background-color: #e2e8f0;
-        font-weight: bold;
-        color: #1e3a8a;
-        font-size: 13.5px;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    select {
-        width: 100%;
-        border: 1px solid #cbd5e1;
-        background-color: #f8fafc;
-        padding: 5px 6px;
-        box-sizing: border-box;
-        font-size: 13px;
-        font-family: inherit;
-        border-radius: 3px;
-    }
-
-    select {
-        text-align: center;
-        text-align-last: center;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    select.val-H {
-        color: #dc2626;
-        background-color: #fef2f2;
-    }
-
-    select.val-L {
-        color: #2563eb;
-        background-color: #eff6ff;
-    }
-
-    select.val-N {
-        color: #333;
-        background-color: #f8fafc;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .note-box {
-        font-size: 11px;
-        color: #475569;
-        background-color: #f8fafc;
-        border: 1px dashed #cbd5e1;
-        padding: 6px 10px;
-        margin-bottom: 10px;
-        border-radius: 4px;
-    }
-
-    textarea {
-        width: 100%;
-        height: 70px;
-        border: 1px solid #cbd5e1;
-        background-color: #f8fafc;
-        padding: 6px;
-        box-sizing: border-box;
-        font-size: 13px;
-        font-family: inherit;
-        resize: none;
-        border-radius: 3px;
-    }
-
-    .tall-textarea {
-        height: 160px;
-    }
-
-    /* 👑 Word 樣式文字控制工具列 */
-    .editor-tools {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-bottom: 5px;
-        background-color: #f8fafc;
-        padding: 5px;
-        border-radius: 4px;
-        border: 1px solid #cbd5e1;
-    }
-
-    .tool-btn {
-        background-color: #ffffff;
-        border: 1px solid #cbd5e1;
-        padding: 4px 9px;
-        font-size: 11px;
-        font-weight: bold;
-        color: #475569;
-        border-radius: 3px;
-        cursor: pointer;
-        transition: all 0.15s;
-        display: flex;
-        align-items: center;
-        gap: 2px;
-    }
-
-    .tool-btn:hover {
-        background-color: #e2e8f0;
-        color: #1e3a8a;
-        border-color: #94a3b8;
-    }
-
-    .tool-split {
-        width: 1px;
-        background-color: #cbd5e1;
-        margin: 0 3px;
-        height: 18px;
-        align-self: center;
-    }
-
-    /* 專為匯出/列印時生成的文字分流層樣式 */
-    .print-text-block {
-        display: none;
-        width: 100%;
-        min-height: 20px;
-        font-size: 13px;
-        line-height: 1.6;
-        color: #000;
-        white-space: pre-wrap;
-        word-break: break-all;
-        text-align: left;
-    }
-
-    .print-inline-text {
-        display: none;
-        font-weight: bold;
-        padding: 0 4px;
-        font-size: 13px;
-    }
-
-    .checkbox-group {
-        display: flex;
-        justify-content: space-around;
-        padding: 3px 0;
-    }
-
-    .checkbox-label {
-        display: flex;
-        align-items: center;
-        font-weight: bold;
-        cursor: pointer;
-        position: relative;
-        /* 👑 為了 ✔️ 對齊 */
-    }
-
-    .checkbox-label input[type="checkbox"] {
-        margin-right: 6px;
-        width: 14px;
-        height: 14px;
-    }
-
-    /* 👑 專為圖片/列印設計的✔️顯示標記 */
-    .print-check-mark {
-        display: none;
-        /* 平時隱藏 */
-        color: #2563eb;
-        font-size: 16px;
-        font-weight: bold;
-        margin-right: 6px;
-    }
-
-    /* 電子簽名上傳樣式 */
-    .sig-upload-container {
-        margin-top: 12px;
-        position: relative;
-    }
-
-    /* 隱藏原生 file input */
-    .sig-file-input {
-        display: none;
-    }
-
-    .upload-btn {
-        display: inline-block;
-        padding: 5px 10px;
-        background-color: #f1f5f9;
-        color: #475569;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .sig-preview-wrapper {
-        position: relative;
-        display: inline-block;
-        margin-top: 5px;
-    }
-
-    .sig-preview-img {
-        width: 270px;
-        object-fit: contain;
-    }
-
-    .delete-sig-btn {
-        background: #ef4444;
-        color: white;
-        border: none;
-        border-radius: 3px;
-        padding: 2px 6px;
-        font-size: 10px;
-        cursor: pointer;
-        margin-left: 10px;
-        vertical-align: bottom;
-    }
-
-    /* 醫療機構章 */
-    .hospital-stamp-wrapper {
-        display: inline-block;
-        margin-top: 5px;
-        text-align: center;
-    }
-
-    .hospital-stamp-wrapper img {
-        max-width: 95px;
-        max-height: 95px;
-        object-fit: contain;
-    }
-
-    /* ==================== 輸出或列印時的狀態切換 ==================== */
-    .is-exporting input,
-    .is-exporting textarea,
-    .is-exporting select,
-    .is-exporting .editor-tools {
-        display: none !important;
-    }
-
-    .is-exporting .print-text-block,
-    .is-exporting .print-inline-text {
-        display: block !important;
-    }
-
-    .is-exporting span.print-inline-text {
-        display: inline-block !important;
-    }
-
-    /* 👑 核心修正：讓導出 JPG 圖片時，也能隱藏原始複選框並正確顯示 ✔️ */
-    .is-exporting input[type="checkbox"] {
-        display: none !important;
-    }
-
-    .is-exporting input[type="checkbox"]:checked~.print-check-mark {
-        display: inline-block !important;
-    }
-
-    .is-exporting .upload-btn,
-    .is-exporting .delete-sig-btn {
-        display: none !important;
-    }
-
-    /* 👑 讓匯出圖片與列印時，異常標記（H/L）依然保有對應的顏色 */
-    .is-exporting .flag-H-color,
-    .flag-H-color {
-        color: #dc2626 !important; /* 紅色 H */
-    }
-
-    .is-exporting .flag-L-color,
-    .flag-L-color {
-        color: #2563eb !important; /* 藍色 L */
-    }
-
-    /* 強制確保在圖片導出中帶有 text-center 的元件能完美置中 */
-    .is-exporting .text-center {
-        text-align: center !important;
-    }
-
-    /* 修正診斷書最底下的中華民國開立日期欄位偏邊問題 */
-    #cert-panel table tr td[colspan="2"] {
-        text-align: center !important;
-    }
-
-    @media print {
-
+    <style>
+        /* 基礎全域設定 */
         html,
         body {
-            background-color: #fff;
-            padding: 0;
+            background-color: #f1f5f9;
             margin: 0;
-            height: auto !important;
-            overflow: visible !important;
+            padding: 0;
+            font-family: "Helvetica Neue", Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            color: #333;
+            font-size: 13px;
+            line-height: 1.4;
+            height: auto;
+            min-height: 100%;
         }
 
-        .system-header,
-        .editor-tools {
-            display: none !important;
+        body {
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 頂部功能與分頁列 */
+        .system-header {
+            max-width: 210mm;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg,
+                    #1e293b 0%,
+                    #334155 100%);
+
+            border-radius: 16px;
+            padding: 18px 24px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, .15);
+
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .top-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 水平置中 */
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .header-title {
+            margin-bottom: 15px;
+        }
+
+        .header-title h2 {
+            margin: 0;
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header-title span {
+            color: #cbd5e1;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, .08);
+            padding: 6px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            color: #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, .08);
+            color: white;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #1e293b;
+
+            box-shadow:
+                0 3px 10px rgba(0, 0, 0, .15);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 10px 18px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            color: white;
+
+            cursor: pointer;
+
+            transition: .25s;
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg,
+                    #2563eb,
+                    #1d4ed8);
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(37, 99, 235, .35);
+        }
+
+        .btn-jpg {
+            background: linear-gradient(135deg,
+                    #059669,
+                    #047857);
+        }
+
+        .btn-jpg:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(5, 150, 105, .35);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg,
+                    #ef4444,
+                    #dc2626);
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(239, 68, 68, .35);
         }
 
         .form-panel {
-            display: none !important;
+            display: none;
         }
 
         .form-panel.active {
-            display: block !important;
+            display: block;
         }
 
-        .page-container {
+        /* ==================== 🧠 簡易智能狀態測驗專用樣式 ==================== */
+        /* 醫療級距點選組 */
+        .rating-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
             width: 100%;
-            box-shadow: none;
-            padding: 0;
-            margin: 0;
+        }
+
+        .rating-label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 4px;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .rating-label input[type="radio"] {
+            display: none;
+            /* 隱藏原生單選鈕 */
+        }
+
+        /* 點選時的顏色漸層（很糟糕紅 -> 良好綠） */
+        .rating-label:has(input[value="嚴重"]:checked) {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border-color: #f87171;
+        }
+
+        .rating-label:has(input[value="偏弱"]:checked) {
+            background-color: #fff7ed;
+            color: #ea580c;
+            border-color: #fb923c;
+        }
+
+        .rating-label:has(input[value="尚可"]:checked) {
+            background-color: #fefce8;
+            color: #ca8a04;
+            border-color: #facc15;
+        }
+
+        .rating-label:has(input[value="平穩"]:checked) {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border-color: #4ade80;
+        }
+
+        .rating-label:has(input[value="正常"]:checked) {
+            background-color: #ecfdf5;
+            color: #059669;
+            border-color: #34d399;
+        }
+
+        /* 👑 專為智能測驗匯出設計的結果蓋板 */
+        .print-rating-result {
+            display: none;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-align: center;
+            width: auto;
+            margin: 0 auto;
+        }
+
+        /* 匯出狀態下，隱藏按鈕組，顯示純文字結果 */
+        .is-exporting .rating-group {
+            display: none !important;
+        }
+
+        .is-exporting .print-rating-result {
+            display: inline-block !important;
+        }
+
+        @media print {
+            .rating-group {
+                display: none !important;
+            }
+
+            .print-rating-result {
+                display: inline-block !important;
+            }
+
+            /* 確保列印時顏色不會不見 */
+            .result-嚴重 {
+                background-color: #fef2f2 !important;
+                color: #dc2626 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .result-偏弱 {
+                background-color: #fff7ed !important;
+                color: #ea580c !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .result-尚可 {
+                background-color: #fefce8 !important;
+                color: #ca8a04 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .result-平穩 {
+                background-color: #f0fdf4 !important;
+                color: #16a34a !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .result-正常 {
+                background-color: #ecfdf5 !important;
+                color: #059669 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        /* 匯出圖片時的顏色對應 */
+        .is-exporting .result-嚴重 {
+            background-color: #fef2f2 !important;
+            color: #dc2626 !important;
+        }
+
+        .is-exporting .result-偏弱 {
+            background-color: #fff7ed !important;
+            color: #ea580c !important;
+        }
+
+        .is-exporting .result-尚可 {
+            background-color: #fefce8 !important;
+            color: #ca8a04 !important;
+        }
+
+        .is-exporting .result-平穩 {
+            background-color: #f0fdf4 !important;
+            color: #16a34a !important;
+        }
+
+        .is-exporting .result-正常 {
+            background-color: #ecfdf5 !important;
+            color: #059669 !important;
+        }
+
+        /* A4 紙張基本外框 */
+        .page-container {
+            width: 210mm;
+            min-height: 297mm;
             height: auto !important;
-            min-height: 0 !important;
+            margin: 0 auto;
+            padding: 25px 30px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            box-sizing: border-box;
+            position: relative;
         }
 
-        input,
-        textarea,
-        select {
-            display: none !important;
+        h1 {
+            text-align: center;
+            font-size: 20px;
+            margin: 5px 0 15px 0;
+            color: #1a365d;
+            letter-spacing: 1px;
         }
 
-        .print-text-block {
-            display: block !important;
+        .doc-sub {
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+            margin-top: -10px;
+            margin-bottom: 20px;
         }
 
-        .print-inline-text {
-            display: inline-block !important;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            table-layout: fixed;
         }
 
-        /* 👑 列印模式亦採用 ✔️ 標記取代方塊 */
-        input[type="checkbox"] {
-            display: none !important;
-        }
-
-        input[type="checkbox"]:checked~.print-check-mark {
-            display: inline-block !important;
-        }
-
-        .flag-H-color {
-        color: #dc2626 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        }
-        .flag-L-color {
-            color: #2563eb !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .upload-btn,
-        .delete-sig-btn {
-            display: none !important;
-        }
-
-        table,
-        tr,
+        th,
         td {
-            page-break-inside: avoid;
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            vertical-align: middle;
+            word-wrap: break-word;
+            white-space: normal;
         }
 
         th {
-            background-color: #1e3a8a !important;
-            color: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            background-color: #1e3a8a;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         .section-title {
-            background-color: #e2e8f0 !important;
-            color: #1e3a8a !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            background-color: #e2e8f0;
+            font-weight: bold;
+            color: #1e3a8a;
+            font-size: 13.5px;
         }
 
-        @page {
-            size: A4;
-            margin: 1.5cm 1.4cm;
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
+            padding: 5px 6px;
+            box-sizing: border-box;
+            font-size: 13px;
+            font-family: inherit;
+            border-radius: 3px;
         }
-    }
-</style>
+
+        select {
+            text-align: center;
+            text-align-last: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        select.val-H {
+            color: #dc2626;
+            background-color: #fef2f2;
+        }
+
+        select.val-L {
+            color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        select.val-N {
+            color: #333;
+            background-color: #f8fafc;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .note-box {
+            font-size: 11px;
+            color: #475569;
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 6px 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 70px;
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
+            padding: 6px;
+            box-sizing: border-box;
+            font-size: 13px;
+            font-family: inherit;
+            resize: none;
+            border-radius: 3px;
+        }
+
+        .tall-textarea {
+            height: 160px;
+        }
+
+        /* 👑 Word 樣式文字控制工具列 */
+        .editor-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 5px;
+            background-color: #f8fafc;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .tool-btn {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 4px 9px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #475569;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .tool-btn:hover {
+            background-color: #e2e8f0;
+            color: #1e3a8a;
+            border-color: #94a3b8;
+        }
+
+        .tool-split {
+            width: 1px;
+            background-color: #cbd5e1;
+            margin: 0 3px;
+            height: 18px;
+            align-self: center;
+        }
+
+        /* 專為匯出/列印時生成的文字分流層樣式 */
+        .print-text-block {
+            display: none;
+            width: 100%;
+            min-height: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #000;
+            white-space: pre-wrap;
+            word-break: break-all;
+            text-align: left;
+        }
+
+        .print-inline-text {
+            display: none;
+            font-weight: bold;
+            padding: 0 4px;
+            font-size: 13px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            justify-content: space-around;
+            padding: 3px 0;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            /* 👑 為了 ✔️ 對齊 */
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 6px;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* 👑 專為圖片/列印設計的✔️顯示標記 */
+        .print-check-mark {
+            display: none;
+            /* 平時隱藏 */
+            color: #2563eb;
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        /* 電子簽名上傳樣式 */
+        .sig-upload-container {
+            margin-top: 12px;
+            position: relative;
+        }
+
+        /* 隱藏原生 file input */
+        .sig-file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .sig-preview-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .sig-preview-img {
+            width: 270px;
+            object-fit: contain;
+        }
+
+        .delete-sig-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-left: 10px;
+            vertical-align: bottom;
+        }
+
+        /* 醫療機構章 */
+        .hospital-stamp-wrapper {
+            display: inline-block;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .hospital-stamp-wrapper img {
+            max-width: 95px;
+            max-height: 95px;
+            object-fit: contain;
+        }
+
+        /* ==================== 輸出或列印時的狀態切換 ==================== */
+        .is-exporting input,
+        .is-exporting textarea,
+        .is-exporting select,
+        .is-exporting .editor-tools {
+            display: none !important;
+        }
+
+        .is-exporting .print-text-block,
+        .is-exporting .print-inline-text {
+            display: block !important;
+        }
+
+        .is-exporting span.print-inline-text {
+            display: inline-block !important;
+        }
+
+        /* 👑 核心修正：讓導出 JPG 圖片時，也能隱藏原始複選框並正確顯示 ✔️ */
+        .is-exporting input[type="checkbox"] {
+            display: none !important;
+        }
+
+        .is-exporting input[type="checkbox"]:checked~.print-check-mark {
+            display: inline-block !important;
+        }
+
+        .is-exporting .upload-btn,
+        .is-exporting .delete-sig-btn {
+            display: none !important;
+        }
+
+        /* 👑 讓匯出圖片與列印時，異常標記（H/L）依然保有對應的顏色 */
+        .is-exporting .flag-H-color,
+        .flag-H-color {
+            color: #dc2626 !important;
+            /* 紅色 H */
+        }
+
+        .is-exporting .flag-L-color,
+        .flag-L-color {
+            color: #2563eb !important;
+            /* 藍色 L */
+        }
+
+        /* 強制確保在圖片導出中帶有 text-center 的元件能完美置中 */
+        .is-exporting .text-center {
+            text-align: center !important;
+        }
+
+        @media print {
+
+            html,
+            body {
+                background-color: #fff;
+                padding: 0;
+                margin: 0;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            .system-header,
+            .editor-tools {
+                display: none !important;
+            }
+
+            .form-panel {
+                display: none !important;
+            }
+
+            .form-panel.active {
+                display: block !important;
+            }
+
+            .page-container {
+                width: 100%;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                height: auto !important;
+                min-height: 0 !important;
+            }
+
+            input,
+            textarea,
+            select {
+                display: none !important;
+            }
+
+            .print-text-block {
+                display: block !important;
+            }
+
+            .print-inline-text {
+                display: inline-block !important;
+            }
+
+            /* 👑 列印模式亦採用 ✔️ 標記取代方塊 */
+            input[type="checkbox"] {
+                display: none !important;
+            }
+
+            input[type="checkbox"]:checked~.print-check-mark {
+                display: inline-block !important;
+            }
+
+            .flag-H-color {
+                color: #dc2626 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .flag-L-color {
+                color: #2563eb !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .upload-btn,
+            .delete-sig-btn {
+                display: none !important;
+            }
+
+            table,
+            tr,
+            td {
+                page-break-inside: avoid;
+            }
+
+            th {
+                background-color: #1e3a8a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .section-title {
+                background-color: #e2e8f0 !important;
+                color: #1e3a8a !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            @page {
+                size: A4;
+                margin: 1.5cm 1.4cm;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
     <div class="system-header">
+
+        <div class="header-title">
+            <h2>🏥 聖安地列斯醫療服務隊-文書系統</h2>
+            <span>Medical Documentation System</span>
+        </div>
+
         <div class="top-row">
             <div class="tab-group">
                 <button class="tab-btn active" onclick="switchForm('report-panel')">📋 警員健檢報告</button>
-                <button class="tab-btn" onclick="switchForm('cert-panel')">📜 診斷證明書 (大眾用)</button>
+                <button class="tab-btn" onclick="switchForm('cert-panel')">📜 診斷證明書</button>
+                <button class="tab-btn" onclick="switchForm('mmse-panel')">🧠 簡易智能狀態測驗</button>
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-clear" onclick="clearAllSystemData()">✕ 一鍵清空資料</button>
-                <button class="btn btn-pdf" onclick="handlePDFExport()">輸出 PDF</button>
-                <button class="btn btn-jpg" onclick="handleJPGExport()">輸出 JPG 圖片</button>
+                <button class="btn btn-pdf" onclick="handlePDFExport()">
+                    🖨️ 輸出 PDF / 列印
+                </button>
+
+                <button class="btn btn-jpg" onclick="handleJPGExport()">
+                    🖼️ 輸出 JPG 圖片
+                </button>
+
+                <button class="btn btn-clear" onclick="clearAllSystemData()">
+                    🧼 清空當前資料
+                </button>
             </div>
         </div>
     </div>
@@ -813,7 +1038,8 @@
                                 </label>
                             </div>
                         </div>
-                        <input type="text" id="xray-text" style="margin-top: 6px;" placeholder="影像詳細說明紀錄..." data-name="胸腔X光詳細紀錄">
+                        <input type="text" id="xray-text" style="margin-top: 6px;" placeholder="影像詳細說明紀錄..."
+                            data-name="胸腔X光詳細紀錄">
                         <div class="print-text-block" style="margin-top: 6px;"></div>
                     </td>
                 </tr>
@@ -902,11 +1128,14 @@
                     </td>
                     <td style="width:15%;"><strong>生理性別</strong></td>
                     <td style="width:35%;">
-                        <select class="cert-req" data-name="患者性別">
+                        <select id="cert-gender-input" class="cert-req" data-name="患者性別">
+                        
                             <option value="">-- 請選擇 --</option>
                             <option value="男">男 (Male)</option>
                             <option value="女">女 (Female)</option>
+                        
                         </select>
+                        
                         <div class="print-text-block"></div>
                     </td>
                 </tr>
@@ -1036,380 +1265,858 @@
             </div>
         </div>
     </div>
-<script>
-    let currentTabId = 'report-panel';
+    <div id="mmse-panel" class="form-panel">
+        <div class="page-container" id="mmse-content">
+            <h1>簡易智能狀態測驗評估報告 (MMSE)</h1>
+            <div class="doc-sub">心理精神狀態臨床主觀評估表</div>
 
-    // 分頁切換邏輯
-    function switchForm(tabId) {
-        currentTabId = tabId;
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        if (tabId === 'report-panel') {
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        } else {
-            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            <table>
+                <tr>
+                    <th colspan="4" class="section-title">一、受測者基本資料</th>
+                </tr>
+                <tr>
+                    <td style="width: 15%;" class="text-center"><b>受測者姓名</b></td>
+                    <td style="width: 35%;">
+                        <input type="text" id="mmse-name-input" data-name="受測者姓名" placeholder="請輸入姓名">
+                        <span class="print-text-block"></span>
+                    </td>
+                    <td style="width: 15%;" class="text-center"><b>測驗日期</b></td>
+                    <td style="width: 35%;">
+                        <input type="date" id="mmse-date-input" data-name="測驗日期">
+                        <span class="print-text-block"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th colspan="3" class="section-title">二、認知功能維度評估</th>
+                </tr>
+                <tr>
+                    <th style="width: 25%;">評估認知維度</th>
+                    <th style="width: 35%;">臨床觀測指標說明</th>
+                    <th style="width: 40%;">臨床狀態主觀評級 (醫生勾選)</th>
+                </tr>
+
+                <tr>
+                    <td class="text-center"><b>定向力<br>(Orientation)</b></td>
+                    <td style="font-size: 12px; color: #475569;">能清楚分辨當前的時間（年、月、日、星期、季節）以及所處的地點空間（醫院、樓層、城市）。</td>
+                    <td>
+                        <div class="rating-group" data-group="orientation">
+                            <label class="rating-label"><input type="radio" name="orientation" value="嚴重">嚴重</label>
+                            <label class="rating-label"><input type="radio" name="orientation" value="偏弱">偏弱</label>
+                            <label class="rating-label"><input type="radio" name="orientation" value="尚可">尚可</label>
+                            <label class="rating-label"><input type="radio" name="orientation" value="平穩">平穩</label>
+                            <label class="rating-label"><input type="radio" name="orientation" value="正常">正常</label>
+                        </div>
+                        <div class="print-rating-result" id="res-orientation"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center"><b>記憶力與登錄<br>(Registration)</b></td>
+                    <td style="font-size: 12px; color: #475569;">對醫師連續複述的三個不相關詞彙（如：皮夾、車子、梅花）能立即聽懂並正確覆誦覆述。</td>
+                    <td>
+                        <div class="rating-group" data-group="registration">
+                            <label class="rating-label"><input type="radio" name="registration" value="嚴重">嚴重</label>
+                            <label class="rating-label"><input type="radio" name="registration"
+                                    value="偏弱">偏弱</label>
+                            <label class="rating-label"><input type="radio" name="registration" value="尚可">尚可</label>
+                            <label class="rating-label"><input type="radio" name="registration" value="平穩">平穩</label>
+                            <label class="rating-label"><input type="radio" name="registration" value="正常">正常</label>
+                        </div>
+                        <div class="print-rating-result" id="res-registration"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center"><b>注意力與計算力<br>(Attention/Calculation)</b></td>
+                    <td style="font-size: 12px; color: #475569;">能進行連續減 7 運算（如：100-7=93，再減7），或能倒過來拼湊高難度詞彙，專注力集中。</td>
+                    <td>
+                        <div class="rating-group" data-group="calculation">
+                            <label class="rating-label"><input type="radio" name="calculation" value="嚴重">嚴重</label>
+                            <label class="rating-label"><input type="radio" name="calculation" value="偏弱">偏弱</label>
+                            <label class="rating-label"><input type="radio" name="calculation" value="尚可">尚可</label>
+                            <label class="rating-label"><input type="radio" name="calculation" value="平穩">平穩</label>
+                            <label class="rating-label"><input type="radio" name="calculation" value="正常">正常</label>
+                        </div>
+                        <div class="print-rating-result" id="res-calculation"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center"><b>短期回憶<br>(Recall)</b></td>
+                    <td style="font-size: 12px; color: #475569;">在間隔數分鐘的心算干擾後，仍能成功回憶並正確說出剛才登錄且覆述的三個不相關物件詞彙。</td>
+                    <td>
+                        <div class="rating-group" data-group="recall">
+                            <label class="rating-label"><input type="radio" name="recall" value="嚴重">嚴重</label>
+                            <label class="rating-label"><input type="radio" name="recall" value="偏弱">偏弱</label>
+                            <label class="rating-label"><input type="radio" name="recall" value="尚可">尚可</label>
+                            <label class="rating-label"><input type="radio" name="recall" value="平穩">平穩</label>
+                            <label class="rating-label"><input type="radio" name="recall" value="正常">正常</label>
+                        </div>
+                        <div class="print-rating-result" id="res-recall"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center"><b>語言及結構能力<br>(Language/Structure)</b></td>
+                    <td style="font-size: 12px; color: #475569;">包含命名（手錶、原子筆）、遵從三步驟指令、閱讀並執行指定動作，以及正確臨摹繪製交叉幾何圖形。</td>
+                    <td>
+                        <div class="rating-group" data-group="language">
+                            <label class="rating-label"><input type="radio" name="language" value="嚴重">嚴重</label>
+                            <label class="rating-label"><input type="radio" name="language" value="偏弱">偏弱</label>
+                            <label class="rating-label"><input type="radio" name="language" value="尚可">尚可</label>
+                            <label class="rating-label"><input type="radio" name="language" value="平穩">平穩</label>
+                            <label class="rating-label"><input type="radio" name="language" value="正常">正常</label>
+                        </div>
+                        <div class="print-rating-result" id="res-language"></div>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th class="section-title">三、臨床綜合評估與後續醫囑建議</th>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-tools">
+                            <button class="tool-btn" type="button" onclick="insertIndent('mmse-suggest')">⇥
+                                首行縮進</button>
+                            <button class="tool-btn" type="button" onclick="insertBullet('mmse-suggest')">⚫
+                                項目符號</button>
+                            <button class="tool-btn" type="button" onclick="insertAutoNumber('mmse-suggest')">1.
+                                自動序號</button>
+                            <div class="tool-split"></div>
+                            <button class="tool-btn" type="button" onclick="clearFormat('mmse-suggest')"
+                                style="color:#ef4444;">✕ 清除格式</button>
+                        </div>
+                        <textarea id="mmse-suggest" class="tall-textarea" data-name="醫囑建議"
+                            placeholder="請詳細輸入病患智能測驗表現之總評，以及後續是否需要轉介精神科或神經內科進一步追蹤之醫囑建議..."></textarea>
+                        <div class="print-text-block" style="text-align: left; min-height: 160px;"></div>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td class="section-title" colspan="2">✍️ 醫療機構與醫師證明簽章</td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding: 15px; min-height: 110px; vertical-align: top;">
+                        <strong>評估醫師簽章：</strong>
+                        <div class="sig-upload-container">
+                            <label for="mmse-doctor-sig-upload" class="upload-btn">➕ 上傳醫師電子簽名檔</label>
+                            <input type="file" id="mmse-doctor-sig-upload" class="sig-file-input" accept="image/*"
+                                onchange="previewMmseSignature(event)">
+
+                            <div id="mmse-sig-preview-wrapper" class="sig-preview-wrapper" style="display: none;">
+                                <img id="mmse-sig-preview-img" class="sig-preview-img" src="" alt="醫師簽名">
+                                <button type="button" class="delete-sig-btn" onclick="removeMmseSignature()">✕
+                                    刪除</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 50%; padding: 15px; vertical-align: top; text-align: center; position: relative;">
+                        <strong style="display: block; text-align: left; margin-bottom: 5px;">醫療機構證明專用章：</strong>
+                        <div class="hospital-stamp-wrapper">
+                            <img src="logo.png" alt="醫療機構證明專用章"
+                                onerror="this.style.display='none'; document.getElementById('report-stamp-error-text').style.display='block';">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding: 12px; text-align: right; font-size: 13px;">
+                        <strong>西元</strong>
+                        <input type="text" id="mmse-year-input" style="width: 65px; text-align: center;"
+                            data-name="開立年份" placeholder="年">
+                        <span id="mmse-year-text" class="print-inline-text"></span> <strong>年</strong>
+
+                        <input type="text" id="mmse-month-input" style="width: 40px; text-align: center;"
+                            data-name="開立月份" placeholder="月">
+                        <span id="mmse-month-text" class="print-inline-text"></span> <strong>月</strong>
+
+                        <input type="text" id="mmse-day-input" style="width: 40px; text-align: center;" data-name="開立日期"
+                            placeholder="日">
+                        <span id="mmse-day-text" class="print-inline-text"></span> <strong>日 證明開立</strong>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="note-box" style="margin-top: 25px;">
+                * 備註說明：本證明書所載之診斷與醫囑，均由合格醫師依臨床專業診療評估開立。非經本醫療機構授權不得私自塗改。本證明書影本無加蓋本院騎縫/關防章者無效。
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // 全局狀態：記錄目前所在的分頁面板 ID
+        let currentTabId = 'report-panel';
+
+        /**
+         * 🔄 系統分頁無縫切換邏輯
+         */
+        function switchForm(tabId) {
+            currentTabId = tabId;
+
+            // 切換頁籤按鈕樣式
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (tabId === 'report-panel') {
+                const btn = document.querySelectorAll('.tab-btn')[0];
+                if (btn) btn.classList.add('active');
+            } else if (tabId === 'cert-panel') {
+                const btn = document.querySelectorAll('.tab-btn')[1];
+                if (btn) btn.classList.add('active');
+            } else if (tabId === 'mmse-panel') {
+                const btn = document.querySelectorAll('.tab-btn')[2];
+                if (btn) btn.classList.add('active');
+            }
+
+            // 切換內容面板顯示狀態
+            document.querySelectorAll('.form-panel').forEach(panel => panel.classList.remove('active'));
+            const targetPanel = document.getElementById(tabId);
+            if (targetPanel) targetPanel.classList.add('active');
         }
-        document.querySelectorAll('.form-panel').forEach(panel => panel.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-    }
 
-    // 限制複選框只能單選（適用於 X光 與 綜合總評）
-    function setupSingleCheck(className) {
-        const checkboxes = document.querySelectorAll('.' + className);
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', function () {
-                if (this.checked) {
-                    checkboxes.forEach(other => {
-                        if (other !== this) other.checked = false;
-                    });
+        /**
+         * 🎛️ 限制核取方塊複選框只能單選（精確鎖定 X光 與 綜合總評）
+         */
+        function setupSingleCheck(className) {
+            const checkboxes = document.querySelectorAll('.' + className);
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function () {
+                    if (this.checked) {
+                        checkboxes.forEach(other => {
+                            if (other !== this) other.checked = false;
+                        });
+                    }
+                });
+            });
+        }
+
+        /**
+         * 👑 Word 樣式文字控制工具（優化游標定位與即時同步）
+         */
+        function insertBullet(textareaId) {
+            const txt = document.getElementById(textareaId);
+            if (!txt) return;
+
+            const start = txt.selectionStart;
+            const end = txt.selectionEnd;
+            const val = txt.value;
+
+            const bulletStr = (start === 0 || val.charAt(start - 1) === '\n') ? "⚫ " : "\n⚫ ";
+
+            txt.value = val.substring(0, start) + bulletStr + val.substring(end);
+            txt.focus();
+
+            const newCursorPos = start + bulletStr.length;
+            txt.setSelectionRange(newCursorPos, newCursorPos);
+
+            syncInputsToPrintBlocks(currentTabId);
+        }
+
+        function insertAutoNumber(textareaId) {
+            const txt = document.getElementById(textareaId);
+            if (!txt) return;
+
+            const start = txt.selectionStart;
+            const end = txt.selectionEnd;
+            const val = txt.value;
+
+            const linesBefore = val.substring(0, start).split('\n');
+            let nextNum = 1;
+
+            for (let i = linesBefore.length - 1; i >= 0; i--) {
+                const match = linesBefore[i].trim().match(/^(\d+)\./);
+                if (match) {
+                    nextNum = parseInt(match[1], 10) + 1;
+                    break;
                 }
-            });
-        });
-    }
-    setupSingleCheck('xray-cb');
-    setupSingleCheck('status-cb');
+            }
 
-    /* 👑 Word 樣式文字控制工具 */
-    function insertBullet(textareaId) {
-        const txt = document.getElementById(textareaId);
-        const val = txt.value;
-        const start = txt.selectionStart;
-        const bulletStr = `⚫ `;
-        txt.value = val.substring(0, start) + bulletStr + val.substring(start);
-        txt.focus();
-        txt.selectionStart = txt.selectionEnd = start + bulletStr.length;
-    }
+            const numStr = (start === 0 || val.charAt(start - 1) === '\n') ? `${nextNum}. ` : `\n${nextNum}. `;
 
-    function insertAutoNumber(textareaId) {
-        const txt = document.getElementById(textareaId);
-        const val = txt.value;
-        const start = txt.selectionStart;
-        const lines = val.substring(0, start).split('\n');
-        let nextNum = 1;
+            txt.value = val.substring(0, start) + numStr + val.substring(end);
+            txt.focus();
 
-        for (let i = lines.length - 1; i >= 0; i--) {
-            const match = lines[i].trim().match(/^(\d+)\./);
-            if (match) {
-                nextNum = parseInt(match[1], 10) + 1;
-                break;
+            const newCursorPos = start + numStr.length;
+            txt.setSelectionRange(newCursorPos, newCursorPos);
+
+            syncInputsToPrintBlocks(currentTabId);
+        }
+
+        function insertIndent(textareaId) {
+            const txt = document.getElementById(textareaId);
+            if (!txt) return;
+
+            const start = txt.selectionStart;
+            const end = txt.selectionEnd;
+            const val = txt.value;
+            const indentStr = "  ";
+
+            txt.value = val.substring(0, start) + indentStr + val.substring(end);
+            txt.focus();
+
+            const newCursorPos = start + indentStr.length;
+            txt.setSelectionRange(newCursorPos, newCursorPos);
+
+            syncInputsToPrintBlocks(currentTabId);
+        }
+
+        function clearFormat(textareaId) {
+            const txt = document.getElementById(textareaId);
+            if (!txt) return;
+
+            if (confirm('確定要清除此欄位的所有排版符號與格式嗎？')) {
+                let val = txt.value;
+                val = val.replace(/^⚫\s*/gm, '');
+                val = val.replace(/^\d+\.\s*/gm, '')
+                val = val.replace(/^[ \s]+/gm, '');
+
+                txt.value = val;
+                txt.focus();
+
+                syncInputsToPrintBlocks(currentTabId);
             }
         }
-        const numStr = `${nextNum}. `;
-        txt.value = val.substring(0, start) + numStr + val.substring(start);
-        txt.focus();
-        txt.selectionStart = txt.selectionEnd = start + numStr.length;
-    }
 
-    function insertIndent(textareaId) {
-        const txt = document.getElementById(textareaId);
-        const start = txt.selectionStart;
-        const end = txt.selectionEnd;
-        const val = txt.value;
-        const indentStr = "　　";
-        txt.value = val.substring(0, start) + indentStr + val.substring(end);
-        txt.focus();
-        txt.selectionStart = txt.selectionEnd = start + indentStr.length;
-    }
+        /**
+         * 1️⃣ 健檢報告分頁的簽名處理
+         */
+        function previewReportSignature(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewImg = document.getElementById('report-sig-preview-img');
+                    const printImg = document.getElementById('print-report-sig-img');
+                    const wrapper = document.getElementById('report-sig-preview-wrapper');
 
-    function clearFormat(textareaId) {
-        const txt = document.getElementById(textareaId);
-        let val = txt.value;
-        val = val.replace(/⚫ /g, '');
-        val = val.replace(/^\s*\d+\.\s*/gm, '');
-        val = val.replace(/　　/g, '');
-        txt.value = val;
-        txt.focus();
-    }
+                    if (previewImg) previewImg.src = e.target.result;
+                    if (printImg) printImg.src = e.target.result;
+                    if (wrapper) wrapper.style.display = 'inline-block';
 
-    /* 1️⃣ 健檢報告分頁的簽名處理 */
-    function previewReportSignature(event) {
-        const input = event.target;
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById('report-sig-preview-img').src = e.target.result;
-                document.getElementById('report-sig-preview-wrapper').style.display = 'inline-block';
-                input.parentNode.querySelector('.upload-btn').style.display = 'none';
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function removeReportSignature() {
-        const input = document.getElementById('report-doctor-sig-upload');
-        input.value = '';
-        document.getElementById('report-sig-preview-img').src = '';
-        document.getElementById('report-sig-preview-wrapper').style.display = 'none';
-        input.parentNode.querySelector('.upload-btn').style.display = 'inline-block';
-    }
-
-    /* 2️⃣ 診斷證明書分頁的簽名處理 */
-    function previewCertSignature(event) {
-        const input = event.target;
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById('cert-sig-preview-img').src = e.target.result;
-                document.getElementById('cert-sig-preview-wrapper').style.display = 'inline-block';
-                input.parentNode.querySelector('.upload-btn').style.display = 'none';
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function removeCertSignature() {
-        const input = document.getElementById('cert-doctor-sig-upload');
-        input.value = '';
-        document.getElementById('cert-sig-preview-img').src = '';
-        document.getElementById('cert-sig-preview-wrapper').style.display = 'none';
-        input.parentNode.querySelector('.upload-btn').style.display = 'inline-block';
-    }
-
-    /* 🧼 一鍵清除全系統所有輸入資料 */
-    function clearAllSystemData() {
-        if (confirm("⚠️ 確定要清空整套系統（包含健檢報告與診斷證明書）內填寫的所有資料嗎？\n此動作將無法復原！")) {
-            document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => {
-                el.value = '';
-            });
-
-            document.querySelectorAll('select').forEach(el => {
-                el.selectedIndex = 0;
-                if (el.classList.contains('flag-select') || el.id === 'officer-gender') {
-                    updateSelectStyle(el);
+                    const uploadBtn = input.parentNode.querySelector('.upload-btn');
+                    if (uploadBtn) uploadBtn.style.display = 'none';
                 }
-            });
-
-            document.querySelectorAll('input[type="checkbox"]').forEach(el => {
-                el.checked = false;
-            });
-
-            document.querySelectorAll('.print-text-block, .print-inline-text').forEach(el => {
-                el.innerHTML = '';
-                el.textContent = '';
-                el.className = 'print-text-block'; // 重設類別
-            });
-
-            removeReportSignature();
-            removeCertSignature();
-
-            alert("✨ 系統資料已全數清空，回復至初始乾淨狀態。");
-        }
-    }
-
-    /* 健檢報告自動防呆判讀邏輯 */
-    function calculateCorrectFlag(row) {
-        const inputVal = row.querySelector('.res-input').value.trim();
-        if (inputVal === "" || isNaN(inputVal)) return null;
-
-        const val = parseFloat(inputVal);
-        let min, max;
-
-        if (row.hasAttribute('data-min-male')) {
-            const genderSelect = document.getElementById('officer-gender').value;
-            if (!genderSelect) return null;
-
-            const isFemale = (genderSelect === '女');
-            min = parseFloat(isFemale ? row.getAttribute('data-min-female') : row.getAttribute('data-min-male'));
-            max = parseFloat(isFemale ? row.getAttribute('data-max-female') : row.getAttribute('data-max-male'));
-        } else {
-            min = parseFloat(row.getAttribute('data-min'));
-            max = parseFloat(row.getAttribute('data-max'));
-        }
-
-        if (val > max) return 'H';
-        if (val < min) return 'L';
-        return '—';
-    }
-
-    function updateSelectStyle(selectEl) {
-        selectEl.classList.remove('val-H', 'val-L', 'val-N');
-        if (selectEl.value === 'H') selectEl.classList.add('val-H');
-        else if (selectEl.value === 'L') selectEl.classList.add('val-L');
-        else selectEl.classList.add('val-N');
-    }
-
-    const rows = document.querySelectorAll('#biochem-tbody tr');
-    rows.forEach(row => {
-        const input = row.querySelector('.res-input');
-        const select = row.querySelector('.flag-select');
-
-        input.addEventListener('change', () => {
-            const correctFlag = calculateCorrectFlag(row);
-            if (correctFlag !== null) {
-                select.value = correctFlag;
-                updateSelectStyle(select);
+                reader.readAsDataURL(input.files[0]);
             }
-        });
-        select.addEventListener('change', () => updateSelectStyle(select));
-    });
+        }
 
-    document.getElementById('officer-gender').addEventListener('change', () => {
-        rows.forEach(row => {
+        function removeReportSignature() {
+            const input = document.getElementById('report-doctor-sig-upload');
+            if (input) input.value = '';
+
+            const previewImg = document.getElementById('report-sig-preview-img');
+            const printImg = document.getElementById('print-report-sig-img');
+            const wrapper = document.getElementById('report-sig-preview-wrapper');
+
+            if (previewImg) previewImg.src = '';
+            if (printImg) printImg.src = '';
+            if (wrapper) wrapper.style.display = 'none';
+
+            const btn = document.querySelector('#report-panel .upload-btn');
+            if (btn) btn.style.display = 'inline-block';
+        }
+
+        /**
+         * 2️⃣ 診斷證明書分頁的簽名處理
+         */
+        function previewCertSignature(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewImg = document.getElementById('cert-sig-preview-img');
+                    const printImg = document.getElementById('print-cert-sig-img');
+                    const wrapper = document.getElementById('cert-sig-preview-wrapper');
+
+                    if (previewImg) previewImg.src = e.target.result;
+                    if (printImg) printImg.src = e.target.result;
+                    if (wrapper) wrapper.style.display = 'inline-block';
+
+                    const uploadBtn = input.parentNode.querySelector('.upload-btn');
+                    if (uploadBtn) uploadBtn.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeCertSignature() {
+            const input = document.getElementById('cert-doctor-sig-upload');
+            if (input) input.value = '';
+
+            const previewImg = document.getElementById('cert-sig-preview-img');
+            const printImg = document.getElementById('print-cert-sig-img');
+            const wrapper = document.getElementById('cert-sig-preview-wrapper');
+
+            if (previewImg) previewImg.src = '';
+            if (printImg) printImg.src = '';
+            if (wrapper) wrapper.style.display = 'none';
+
+            const btn = document.querySelector('#cert-panel .upload-btn');
+            if (btn) btn.style.display = 'inline-block';
+        }
+
+        /**
+         * 3️⃣ 簡易智能狀態測驗分頁的簽名處理
+         */
+        function previewMmseSignature(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewImg = document.getElementById('mmse-sig-preview-img');
+                    const printImg = document.getElementById('print-mmse-sig-img');
+                    const wrapper = document.getElementById('mmse-sig-preview-wrapper');
+
+                    if (previewImg) previewImg.src = e.target.result;
+                    if (printImg) printImg.src = e.target.result;
+                    if (wrapper) wrapper.style.display = 'inline-block';
+
+                    const uploadBtn = input.parentNode.querySelector('.upload-btn');
+                    if (uploadBtn) uploadBtn.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeMmseSignature() {
+            const input = document.getElementById('mmse-doctor-sig-upload');
+            if (input) input.value = '';
+
+            const previewImg = document.getElementById('mmse-sig-preview-img');
+            const printImg = document.getElementById('print-mmse-sig-img');
+            const wrapper = document.getElementById('mmse-sig-preview-wrapper');
+
+            if (previewImg) previewImg.src = '';
+            if (printImg) printImg.src = '';
+            if (wrapper) wrapper.style.display = 'none';
+
+            const btn = document.querySelector('#mmse-panel .upload-btn');
+            if (btn) btn.style.display = 'inline-block';
+        }
+
+        /**
+         * 🧼 一鍵清除全系統所有輸入資料
+         */
+        function clearAllSystemData() {
+            if (confirm("⚠️ 確定要清空當前表單分頁內填寫的所有資料嗎？\n此動作將無法復原！")) {
+                const currentPanel = document.getElementById(currentTabId);
+                if (!currentPanel) return;
+
+                currentPanel.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
+                currentPanel.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+                currentPanel.querySelectorAll('select').forEach(el => {
+                    el.selectedIndex = 0;
+                    if (el.classList.contains('flag-select') || el.id === 'officer-gender') updateSelectStyle(el);
+                });
+                currentPanel.querySelectorAll('.print-text-block, .print-inline-text').forEach(el => { el.innerHTML = ''; el.textContent = ''; });
+                currentPanel.querySelectorAll('.print-rating-result').forEach(el => { el.innerHTML = ''; });
+
+                if (currentTabId === 'report-panel') removeReportSignature();
+                else if (currentTabId === 'cert-panel') removeCertSignature();
+                else if (currentTabId === 'mmse-panel') removeMmseSignature();
+
+                syncInputsToPrintBlocks('mmse-panel');
+                alert("✨ 當前分頁資料已完全清空。");
+            }
+        }
+
+        /**
+         * 🔬 健檢報告自動防呆判讀邏輯
+         */
+        function calculateCorrectFlag(row) {
+            const inputValEl = row.querySelector('.res-input');
+            if (!inputValEl) return null;
+            const inputVal = inputValEl.value.trim();
+            if (inputVal === "" || isNaN(inputVal)) return null;
+
+            const val = parseFloat(inputVal);
+            let min, max;
+
             if (row.hasAttribute('data-min-male')) {
-                const select = row.querySelector('.flag-select');
-                const correctFlag = calculateCorrectFlag(row);
-                if (correctFlag !== null) {
-                    select.value = correctFlag;
-                    updateSelectStyle(select);
-                }
+                const genderEl = document.getElementById('officer-gender');
+                const genderSelect = genderEl ? genderEl.value : '';
+                if (!genderSelect) return null;
+
+                const isFemale = (genderSelect === '女');
+                min = parseFloat(isFemale ? row.getAttribute('data-min-female') : row.getAttribute('data-min-male'));
+                max = parseFloat(isFemale ? row.getAttribute('data-max-female') : row.getAttribute('data-max-male'));
+            } else {
+                min = parseFloat(row.getAttribute('data-min'));
+                max = parseFloat(row.getAttribute('data-max'));
             }
-        });
-    });
 
-    /* 表單空白欄位防呆驗證 */
-    function validateActiveForm() {
-        if (currentTabId === 'report-panel') {
-            const reportInputs = document.querySelectorAll('#report-content input[type="text"], #report-content input[type="date"], #report-content textarea, #officer-gender');
-            for (let input of reportInputs) {
-                if (!input.value.trim() && input.getAttribute('data-name') !== "負責醫師姓名複簽" && input.getAttribute('data-name') !== "負責醫師證照字號複簽") {
-                    const fieldName = input.getAttribute('data-name') || "未定義欄位";
-                    alert(`❌ 填寫未完成 (健康檢查報告)！\n請填寫或選擇「${fieldName}」欄位。`);
-                    input.focus();
-                    return false;
-                }
-            }
-            if (!document.querySelector('.xray-cb:checked')) { alert("❌ 請勾選「胸腔 X 光」狀態。"); return false; }
-            if (!document.querySelector('.status-cb:checked')) { alert("❌ 請勾選「綜合總評」狀態。"); return false; }
-        } else {
-            const certInputs = document.querySelectorAll('#cert-panel .cert-req');
-            for (let input of certInputs) {
-                if (!input.value.trim()) {
-                    const fieldName = input.getAttribute('data-name') || "未定義欄位";
-                    alert(`❌ 填寫未完成 (診斷證明書)！\n請填寫或選擇「${fieldName}」欄位。`);
-                    input.focus();
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /* 👑 核心優化：將輸入資料同步至文字層，並動態補上異常顏色標記的 Class */
-    function syncInputsToPrintBlocks(panelId) {
-        const panel = document.getElementById(panelId);
-
-        if (panelId === 'cert-panel') {
-            const yearVal = document.getElementById('cert-year-input').value;
-            const monthVal = document.getElementById('cert-month-input').value;
-            const dayVal = document.getElementById('cert-day-input').value;
-
-            document.getElementById('cert-year-text').textContent = yearVal || "—";
-            document.getElementById('cert-month-text').textContent = monthVal || "—";
-            document.getElementById('cert-day-text').textContent = dayVal || "—";
+            if (val > max) return 'H';
+            if (val < min) return 'L';
+            return '—';
         }
 
-        // 同步一般文字輸入框與大文字區
-        const textFields = panel.querySelectorAll('input[type="text"], textarea');
-        textFields.forEach(field => {
-            if (field.id === 'cert-year-input' || field.id === 'cert-month-input' || field.id === 'cert-day-input') {
-                return;
+        function updateSelectStyle(selectEl) {
+            if (!selectEl) return;
+            selectEl.classList.remove('val-H', 'val-L', 'val-N');
+            if (selectEl.value === 'H') selectEl.classList.add('val-H');
+            else if (selectEl.value === 'L') selectEl.classList.add('val-L');
+            else selectEl.classList.add('val-N');
+        }
+
+        // 初始化生化指標數據自動監聽與全系統單選限縮
+        document.addEventListener("DOMContentLoaded", () => {
+            setupSingleCheck('xray-cb');
+            setupSingleCheck('status-cb');
+
+            const biochemTbody = document.getElementById('biochem-tbody');
+            if (biochemTbody) {
+                const rows = biochemTbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const input = row.querySelector('.res-input');
+                    const select = row.querySelector('.flag-select');
+
+                    if (input && select) {
+                        input.addEventListener('change', () => {
+                            const correctFlag = calculateCorrectFlag(row);
+                            if (correctFlag !== null) {
+                                select.value = correctFlag;
+                                updateSelectStyle(select);
+                            }
+                        });
+                        select.addEventListener('change', () => updateSelectStyle(select));
+                    }
+                });
             }
-            const parent = field.parentNode;
-            const printBlock = parent.querySelector('.print-text-block, .print-inline-text');
-            if (printBlock) {
-                let textValue = field.value;
-                let safeHtml = textValue
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;");
-                printBlock.innerHTML = safeHtml;
+
+            const genderEl = document.getElementById('officer-gender');
+            if (genderEl) {
+                genderEl.addEventListener('change', () => {
+                    const rows = document.querySelectorAll('#biochem-tbody tr');
+                    rows.forEach(row => {
+                        if (row.hasAttribute('data-min-male')) {
+                            const select = row.querySelector('.flag-select');
+                            const correctFlag = calculateCorrectFlag(row);
+                            if (correctFlag !== null && select) {
+                                select.value = correctFlag;
+                                updateSelectStyle(select);
+                            }
+                        }
+                    });
+                });
             }
+
+            const mmseRadios = document.querySelectorAll('#mmse-panel input[type="radio"]');
+            mmseRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    syncInputsToPrintBlocks('mmse-panel');
+                });
+            });
         });
 
-        // 同步日期欄位
-        const dateFields = panel.querySelectorAll('input[type="date"]');
-        dateFields.forEach(field => {
-            const parent = field.parentNode;
-            const printBlock = parent.querySelector('.print-text-block');
-            if (printBlock) {
-                printBlock.textContent = field.value || "—";
+        /**
+         * 🛑 表單防呆驗證邏輯（智慧寬容修正版：防止欄位未完全定義或空白造成系統死鎖）
+         */
+        function validateActiveForm() {
+            try {
+                if (currentTabId === 'report-panel') {
+                    const nameInput = document.getElementById('report-name-input');
+                    if (nameInput && !nameInput.value.trim()) {
+                        alert("❌ 請填寫受檢警員的「姓名」。");
+                        nameInput.focus();
+                        return false;
+                    }
+                } else if (currentTabId === 'cert-panel') {
+                    const certName = document.getElementById('cert-name-input');
+                    if (certName && !certName.value.trim()) {
+                        alert("❌ 請填寫患者的「姓名」。");
+                        certName.focus();
+                        return false;
+                    }
+                } else if (currentTabId === 'mmse-panel') {
+                    const mmseName = document.getElementById('mmse-name-input');
+                    if (mmseName && !mmseName.value.trim()) {
+                        alert("❌ 請填寫受測者的「姓名」。");
+                        mmseName.focus();
+                        return false;
+                    }
+                }
+                return true; // 驗證通過
+            } catch (error) {
+                console.error("驗證發生錯誤，已自動放行輸出以防死鎖:", error);
+                return true;
             }
-        });
+        }
 
-        // 同步下拉選單（包含異常標記的顏色附加）
-        const selectFields = panel.querySelectorAll('select');
-        selectFields.forEach(select => {
-            const parent = select.parentNode;
-            const printBlock = parent.querySelector('.print-text-block');
-            if (printBlock) {
-                const selectedText = select.options[select.selectedIndex]?.text || "—";
-                const selectedValue = select.value;
+        /**
+         * 👑 核心同步與渲染優化（將 Input 同步至 Print 預覽版面）
+         */
+        function syncInputsToPrintBlocks(panelId) {
+            const panel = document.getElementById(panelId) || document;
 
-                printBlock.textContent = selectedText;
+            // ===================================================================
+            // 📋 1. 處理「診斷證明書」拆分年月日
+            // ===================================================================
+            // ===================================================================
+            // 📋 1. 處理「診斷證明書」拆分年月日
+            // ===================================================================
+            if (panelId === 'cert-panel' || document.getElementById('cert-name-input')) {
+                // 日期處理
+                const y = document.getElementById('cert-year-text'); if (y) y.textContent = document.getElementById('cert-year-input')?.value || "—";
+                const m = document.getElementById('cert-month-text'); if (m) m.textContent = document.getElementById('cert-month-input')?.value || "—";
+                const d = document.getElementById('cert-day-text'); if (d) d.textContent = document.getElementById('cert-day-input')?.value || "—";
 
-                // 👑 重置並根據 H/L 狀態附加對應顏色類別，讓導出圖片時有紅藍色
-                printBlock.className = 'print-text-block text-center';
-                if (select.classList.contains('flag-select')) {
-                    if (selectedValue === 'H') {
-                        printBlock.classList.add('flag-H-color');
-                    } else if (selectedValue === 'L') {
-                        printBlock.classList.add('flag-L-color');
+                // 基本資料
+                const name = document.getElementById('print-c-name'); if (name) name.textContent = document.getElementById('cert-name-input')?.value || "—";
+                const idNo = document.getElementById('print-c-id'); if (idNo) idNo.textContent = document.getElementById('cert-id-input')?.value || "—";
+                const birth = document.getElementById('print-c-birth'); if (birth) birth.textContent = document.getElementById('cert-birth-input')?.value || "—";
+
+                // 修正點：性別同步處理
+                const certGender = document.getElementById('cert-gender-input');
+                const printCGender = document.getElementById('print-c-gender');
+
+                if (printCGender && certGender) {
+                    // 取得選取項目的文字，若沒有選擇則顯示 "—"
+                    // 使用 options[selectedIndex].text 可以拿到 "男 (Male)" 或 "女 (Female)"
+                    // 如果只要 "男" 或 "女"，可以使用 .split(' (')[0]
+                    const selectedText = certGender.selectedIndex > 0 ? certGender.options[certGender.selectedIndex].text : "—";
+                    printCGender.textContent = selectedText.split(' (')[0];
+                }
+
+                // 診斷描述與醫囑
+                const diag = document.getElementById('print-c-diag');
+                if (diag) diag.innerHTML = (document.getElementById('cert-diag-input')?.value || "").replace(/\n/g, "<br>");
+
+                const desc = document.getElementById('print-c-desc');
+                if (desc) desc.innerHTML = (document.getElementById('cert-desc-input')?.value || "").replace(/\n/g, "<br>");
+
+                const doc = document.getElementById('print-c-doc');
+                if (doc) doc.textContent = document.getElementById('cert-doc-name-input')?.value || "—";
+            }
+
+            // ===================================================================
+            // 🧠 2. 處理「簡易智能狀態測驗 (MMSE)」資料同步
+            // ===================================================================
+            let correctMmseSuggestValue = "";
+            const allTextareas = document.querySelectorAll('textarea');
+            allTextareas.forEach(tx => {
+                if (tx.id === 'mmse-suggest' || tx.id === 'mmse-summary-input' || tx.placeholder.includes('醫囑') || tx.placeholder.includes('MMSE')) {
+                    correctMmseSuggestValue = tx.value;
+                }
+            });
+            if (!correctMmseSuggestValue) {
+                allTextareas.forEach(tx => {
+                    if (tx.id === 'mmse-suggest' && tx.value.trim() !== "") { correctMmseSuggestValue = tx.value; }
+                });
+            }
+
+            const printSummary = document.getElementById('print-m-summary') ||
+                document.querySelector('.print-summary-box') ||
+                document.querySelector('div[style*="min-height"]') ||
+                (document.querySelectorAll('.print-paper div')[4]) ||
+                document.querySelector('table + div + div');
+
+            if (printSummary) {
+                printSummary.innerHTML = correctMmseSuggestValue ? correctMmseSuggestValue.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>") : "—";
+                printSummary.style.color = "#000000";
+                printSummary.style.padding = "15px";
+            }
+
+            const mmseNameInput = document.getElementById('mmse-name-input') || document.querySelector('input[placeholder*="姓名"]');
+            const mmseDateInput = document.getElementById('mmse-date-input') || document.querySelector('input[type="date"]');
+
+            const printMmseName = document.getElementById('print-m-name') || document.querySelector('td[id="print-m-name"]');
+            const printMmseDate = document.getElementById('print-m-date') || document.querySelector('td[id="print-m-date"]');
+
+            if (mmseNameInput && mmseNameInput.value.trim() !== "") {
+                if (printMmseName) {
+                    printMmseName.textContent = mmseNameInput.value;
+                } else {
+                    const firstTableTds = document.querySelectorAll('table:first-of-type td, .report-table:first-of-type td, .mmse-print-table td');
+                    if (firstTableTds && firstTableTds.length >= 2) {
+                        firstTableTds[1].textContent = mmseNameInput.value;
+                        firstTableTds[1].style.fontWeight = "bold";
                     }
                 }
             }
-        });
-    }
 
-    // 輸出 PDF 控制
-    function handlePDFExport() {
-        if (validateActiveForm()) {
+            if (mmseDateInput && mmseDateInput.value !== "") {
+                if (printMmseDate) {
+                    printMmseDate.textContent = mmseDateInput.value;
+                } else {
+                    const firstTableTds = document.querySelectorAll('table:first-of-type td, .report-table:first-of-type td, .mmse-print-table td');
+                    if (firstTableTds && firstTableTds.length >= 4) {
+                        firstTableTds[3].textContent = mmseDateInput.value;
+                        firstTableTds[3].style.fontWeight = "bold";
+                    }
+                }
+            }
+
+            const mmseY = document.getElementById('mmse-year-text'); if (mmseY) mmseY.textContent = document.getElementById('mmse-year-input')?.value || "—";
+            const mmseM = document.getElementById('mmse-month-text'); if (mmseM) mmseM.textContent = document.getElementById('mmse-month-input')?.value || "—";
+            const mmseD = document.getElementById('mmse-day-text'); if (mmseD) mmseD.textContent = document.getElementById('mmse-day-input')?.value || "—";
+
+            const docInput = document.getElementById('mmse-doc-name-input') || document.getElementById('mmse-doctor-name');
+            const printDoc = document.getElementById('print-m-doc');
+            if (docInput && printDoc) printDoc.textContent = docInput.value || "—";
+
+            const mmseOptionsMap = {
+                orientation: ['嚴重', '偏弱', '尚可', '平穩', '正常'],
+                calculation: ['嚴重', '偏弱', '尚可', '平穩', '正常'],
+                registration: ['嚴重', '偏弱', '尚可', '平穩', '正常'],
+                recall: ['嚴重', '偏弱', '尚可', '平穩', '正常'],
+                language: ['嚴重', '偏弱', '尚可', '平穩', '正常']
+            };
+
+            Object.keys(mmseOptionsMap).forEach(g => {
+                const checkedRadio = document.querySelector(`input[name="${g}"]:checked`);
+                const resBlock = document.getElementById(`res-${g}`) || document.querySelector(`td[id="res-${g}"]`);
+
+                if (resBlock) {
+                    const selectedValue = checkedRadio ? checkedRadio.value : null;
+                    let fullHtml = `<div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-start; align-items: center; width: 100%; box-sizing: border-box;">`;
+
+                    mmseOptionsMap[g].forEach(opt => {
+                        if (opt === selectedValue) {
+                            let themeBg = '#e2f7e3'; let themeColor = '#2ecc71';
+                            if (opt === '尚可') { themeBg = '#e3f2fd'; themeColor = '#3498db'; }
+                            else if (opt === '偏弱') { themeBg = '#fff3e0'; themeColor = '#e67e22'; }
+                            else if (opt === '嚴重') { themeBg = '#ffebee'; themeColor = '#e74c3c'; }
+                            else if (opt === '平穩') { themeBg = '#e8f5e9'; themeColor = '#4caf50'; }
+
+                            fullHtml += `
+                    <span style="display: inline-block; padding: 3px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; 
+                                 background-color: ${themeBg}; color: ${themeColor}; border: 1.5px solid ${themeColor}; text-align: center; white-space: nowrap;">
+                         ${opt}
+                    </span>`;
+                        } else {
+                            fullHtml += `
+                    <span style="display: inline-block; padding: 3px 6px; font-size: 11px; font-weight: normal; border-radius: 4px; 
+                                 background-color: #fafafa; color: #cfd8dc; border: 1px dashed #e0e0e0; text-align: center; white-space: nowrap;">
+                        ${opt}
+                    </span>`;
+                        }
+                    });
+                    fullHtml += `</div>`;
+                    resBlock.innerHTML = fullHtml;
+                }
+
+                // ===== 通用同步 =====
+                panel.querySelectorAll('input[type="text"], input[type="date"], textarea, select')
+                    .forEach(el => {
+                        const block = el.parentElement?.querySelector('.print-text-block') ||
+                            el.parentElement?.querySelector('.print-inline-text');
+
+                        if (!block) return;
+
+                        if (el.tagName === 'SELECT') {
+                            // 如果是下拉選單，取顯示文字，若選第一項則顯示為空或 —
+                            block.textContent = (el.selectedIndex > 0) ? el.options[el.selectedIndex].text.split(' (')[0] : "—";
+                        } else {
+                            // 如果是輸入框或文字區
+                            const value = el.value || "—";
+                            block.innerHTML = value
+                                .replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;")
+                                .replace(/\n/g, "<br>");
+                        }
+                    });
+            });
+
+            // ===================================================================
+            // 📋 3. 處理「健康檢查報告」同步
+            // ===================================================================
+            if (panelId === 'report-panel' || document.getElementById('report-name-input')) {
+                const repNameIn = document.getElementById('report-name-input');
+                if (repNameIn) {
+                    if (document.getElementById('print-r-name')) document.getElementById('print-r-name').textContent = repNameIn.value || "—";
+                    if (document.getElementById('print-r-gender')) document.getElementById('print-r-gender').textContent = document.getElementById('officer-gender')?.value || "—";
+                    if (document.getElementById('print-r-date')) document.getElementById('print-r-date').textContent = document.getElementById('report-date-input')?.value || "—";
+                    if (document.getElementById('print-report-adv')) document.getElementById('print-report-adv').innerHTML = (document.getElementById('report-adv-input')?.value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+                    if (document.getElementById('print-rep-doc')) document.getElementById('print-rep-doc').textContent = document.getElementById('report-doc-name')?.value || "—";
+
+                    const idMap = { 'val-k': 'p-k', 'val-na': 'p-na', 'val-cl': 'p-cl', 'val-wbc': 'p-wbc', 'val-hb': 'p-hb', 'val-plt': 'p-plt' };
+                    Object.keys(idMap).forEach(inId => {
+                        const outEl = document.getElementById(idMap[inId]);
+                        if (outEl) outEl.textContent = document.getElementById(inId)?.value || "—";
+                    });
+                }
+            }
+        }
+
+        /**
+         * 🖨️ 輸出 A4 PDF / 列印控制
+         */
+        function handlePDFExport() {
+            if (validateActiveForm()) {
+                syncInputsToPrintBlocks(currentTabId);
+                window.print();
+            }
+        }
+
+        /**
+         * 🖼️ 輸出 JPG 圖片控制
+         */
+        function handleJPGExport() {
+            if (!validateActiveForm()) return;
+
+            let targetId = 'report-content';
+            let nameValue = "未命名";
+            let docTypeName = "診斷證明書";
+
+            if (currentTabId === 'report-panel') {
+                targetId = 'report-content';
+                const rName = document.getElementById('report-name-input')?.value.trim();
+                if (rName) nameValue = rName;
+                docTypeName = "健檢報告";
+            } else if (currentTabId === 'cert-panel') {
+                targetId = 'cert-content';
+                const cName = document.getElementById('cert-name-input')?.value.trim();
+                if (cName) nameValue = cName;
+                docTypeName = "診斷證明書";
+            } else if (currentTabId === 'mmse-panel') {
+                targetId = 'mmse-content';
+                const mName = document.getElementById('mmse-name-input')?.value.trim();
+                if (mName) nameValue = mName;
+                docTypeName = "智能狀態測驗";
+            }
+
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const finalFileName = `${nameValue}_${docTypeName}_${todayStr}.jpg`;
+            const element = document.getElementById(targetId);
+
+            if (!element) {
+                alert(`找不到對應的導出區塊：#${targetId}，請檢查 HTML 結構是否對齊！`);
+                return;
+            }
+
             syncInputsToPrintBlocks(currentTabId);
-            window.print();
+            element.classList.add('is-exporting');
+
+            const actualHeight = element.scrollHeight;
+            const originalHeightStyle = element.style.height;
+            element.style.height = actualHeight + 'px';
+
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                height: actualHeight,
+                windowHeight: actualHeight,
+                scrollY: 0
+            }).then(canvas => {
+                element.style.height = originalHeightStyle;
+                element.classList.remove('is-exporting');
+
+                const link = document.createElement('a');
+                link.download = finalFileName;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            }).catch(err => {
+                element.style.height = originalHeightStyle;
+                element.classList.remove('is-exporting');
+                console.error("渲染出錯：", err);
+                alert('圖片匯出失敗，可能含有不支援的外部資源或圖片。建議改用「輸出 PDF」！');
+            });
         }
-    }
-
-    // 輸出 JPG 圖片控制
-    function handleJPGExport() {
-        if (!validateActiveForm()) return;
-
-        const targetId = (currentTabId === 'report-panel') ? 'report-content' : 'cert-content';
-
-        let nameValue = "未命名";
-        let docTypeName = "診斷證明書";
-
-        if (currentTabId === 'report-panel') {
-            const rName = document.getElementById('report-name-input').value.trim();
-            if (rName) nameValue = rName;
-            docTypeName = "健檢報告";
-        } else {
-            const cName = document.getElementById('cert-name-input').value.trim();
-            if (cName) nameValue = cName;
-            docTypeName = "診斷證明書";
-        }
-
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const finalFileName = `${nameValue}_${docTypeName}_${todayStr}.jpg`;
-
-        const element = document.getElementById(targetId);
-
-        syncInputsToPrintBlocks(currentTabId);
-        element.classList.add('is-exporting');
-
-        const actualHeight = element.scrollHeight;
-        const originalHeightStyle = element.style.height;
-        element.style.height = actualHeight + 'px';
-
-        html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff',
-            height: actualHeight,
-            windowHeight: actualHeight,
-            scrollY: 0
-        }).then(canvas => {
-            element.style.height = originalHeightStyle;
-            element.classList.remove('is-exporting');
-
-            const link = document.createElement('a');
-            link.download = finalFileName;
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
-            link.click();
-        }).catch(err => {
-            element.style.height = originalHeightStyle;
-            element.classList.remove('is-exporting');
-            alert('圖片匯出失敗，建議改用「輸出 PDF」！');
-        });
-    }
-</script>
+    </script>
 </body>
 
 </html>
