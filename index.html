@@ -1863,10 +1863,7 @@
         function syncInputsToPrintBlocks(panelId) {
             const panel = document.getElementById(panelId) || document;
 
-            // ===================================================================
-            // 📋 1. 處理「診斷證明書」拆分年月日
-            // ===================================================================
-            // ===================================================================
+           
             // 📋 1. 處理「診斷證明書」拆分年月日
             // ===================================================================
             if (panelId === 'cert-panel' || document.getElementById('cert-name-input')) {
@@ -2022,6 +2019,9 @@
                 // ===== 通用同步 =====
                 panel.querySelectorAll('input[type="text"], input[type="date"], textarea, select')
                     .forEach(el => {
+                        // 加入這行：如果該輸入框已經有明確的 ID，或者已經手動同步過了，就跳過
+                        if (el.id.includes('mmse-year') || el.id.includes('mmse-month') || el.id.includes('mmse-day')) return;
+
                         const block = el.parentElement?.querySelector('.print-text-block') ||
                             el.parentElement?.querySelector('.print-inline-text');
 
