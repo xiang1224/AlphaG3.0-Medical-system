@@ -2021,13 +2021,14 @@
                 panel.querySelectorAll('input[type="text"], input[type="date"], textarea, select')
                     .forEach(el => {
                         // 加入這行：如果該輸入框已經有明確的 ID，或者已經手動同步過了，就跳過
-                        if (el.id.includes('mmse-year') || el.id.includes('mmse-month') || el.id.includes('mmse-day')) return;
+                        // --- 加入這行 ---
+                        // 只要是這幾個 ID，就跳過通用迴圈，交給上面的專屬邏輯處理
+                        if (['cert-year-input', 'cert-month-input', 'cert-day-input'].includes(el.id)) return;
 
                         const block = el.parentElement?.querySelector('.print-text-block') ||
                             el.parentElement?.querySelector('.print-inline-text');
 
                         if (!block) return;
-
                         if (el.tagName === 'SELECT') {
                             // 如果是下拉選單，取顯示文字，若選第一項則顯示為空或 —
                             block.textContent = (el.selectedIndex > 0) ? el.options[el.selectedIndex].text.split(' (')[0] : "—";
